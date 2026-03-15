@@ -1,0 +1,1001 @@
+/* ============================================================
+   INST(I)A — style.css
+   Social Network Interface for Bots
+   Pure CSS, dark theme, fully responsive
+   ============================================================ */
+
+/* ============================================================
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   We define all colors, spacing, and radii as variables
+   for easy theming and consistency.
+   ============================================================ */
+:root {
+  /* Background layers — darkest to lightest */
+  --bg-primary: #0d0d12;        /* Main page background */
+  --bg-secondary: #14141c;      /* Sidebar, panels */
+  --bg-tertiary: #1a1a26;       /* Cards, inputs */
+  --bg-hover: #22222f;          /* Hover state backgrounds */
+  --bg-active: #2a2a3a;         /* Active/selected state */
+
+  /* Text colors — high contrast for accessibility (WCAG AA) */
+  --text-primary: #e8e8f0;      /* Main text — ratio ~13:1 on bg-primary */
+  --text-secondary: #a0a0b8;    /* Secondary text — ratio ~6:1 */
+  --text-muted: #6b6b80;        /* Muted/disabled — ratio ~3.5:1 */
+
+  /* Accent colors — chosen to be distinguishable for colorblind users */
+  --accent-primary: #7c6df0;    /* Purple — main accent */
+  --accent-success: #2ecc87;    /* Green — online status */
+  --accent-warning: #f0a030;    /* Amber — busy status */
+  --accent-danger: #e05050;     /* Red — offline/error */
+  --accent-info: #4da6ff;       /* Blue — links, info */
+
+  /* Chat bubble colors */
+  --bubble-user: #7c6df0;       /* User messages — purple */
+  --bubble-bot: #2a2a3a;        /* Bot messages — dark gray */
+
+  /* Borders and shadows */
+  --border-color: #2a2a3a;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 50%;
+
+  /* Sidebar width */
+  --sidebar-width: 260px;
+
+  /* Font stack — system fonts for performance, dyslexia-friendly choices */
+  --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ============================================================
+   2. RESET & BASE
+   Minimal reset for consistent cross-browser rendering.
+   ============================================================ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;   /* Include padding/border in element dimensions */
+}
+
+html {
+  font-size: 16px;           /* Base font size for rem calculations */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;       /* 15px — slightly larger for readability */
+  line-height: 1.6;           /* Generous line height for dyslexia accessibility */
+  letter-spacing: 0.01em;     /* Slight letter spacing aids readability */
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+
+  /* REQUIREMENT: overflow hidden on body — no browser scrolling */
+  overflow: hidden;
+
+  /* REQUIREMENT: site takes entire screen space */
+  height: 100vh;
+  width: 100vw;
+
+  /* FLEXBOX: Column layout stacks header above main content.
+     flex-direction: column — children flow top to bottom.
+     This lets the header take its natural height and
+     main-content fills the remaining space via flex: 1. */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Accessible focus styles — visible keyboard focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ============================================================
+   3. HEADER
+   Fixed top bar with title, search, and navigation.
+   Uses flexbox to distribute items horizontally.
+   ============================================================ */
+.site-header {
+  /* FLEXBOX: Row layout aligns items horizontally.
+     align-items: center — vertically centers all children.
+     gap — adds consistent spacing between children without margins. */
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+
+  background-color: var(--bg-secondary);
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--border-color);
+
+  /* flex-shrink: 0 — prevents header from shrinking
+     when main-content needs space. The header keeps
+     its natural height. */
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.site-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  white-space: nowrap;       /* Prevent title from wrapping */
+  letter-spacing: -0.02em;
+}
+
+.search-bar {
+  /* flex: 1 — search bar expands to fill available space
+     between the title and the nav. This is a key flexbox
+     pattern: fixed items on sides, flexible item in middle. */
+  flex: 1;
+  max-width: 500px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-bar input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.2);
+}
+
+.main-nav {
+  /* FLEXBOX: Row layout for navigation links.
+     gap — consistent spacing between nav items.
+     flex-shrink: 0 — nav doesn't shrink, keeping links readable. */
+  display: flex;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s, background-color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.nav-link--active {
+  color: var(--accent-primary);
+  background-color: var(--bg-tertiary);
+}
+
+/* ============================================================
+   4. MAIN CONTENT LAYOUT
+   Horizontal split: sidebar (left) + body content (right).
+   ============================================================ */
+.main-content {
+  /* FLEXBOX: Row layout splits content into sidebar and body.
+     flex: 1 — this container fills all remaining vertical space
+     after the header (because body is display: flex, column).
+     min-height: 0 — critical for nested flex scroll containers;
+     without this, flex children won't respect overflow properly. */
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ============================================================
+   5. SIDEBAR (AREA A) — Collapsible Bot List
+   ============================================================
+
+   CHECKBOX HACK EXPLAINED:
+   -------------------------
+   The "checkbox hack" uses a hidden <input type="checkbox">
+   and a <label> to create interactive show/hide behavior
+   without JavaScript.
+
+   How it works:
+   1. A checkbox input is placed in the DOM (hidden via CSS).
+   2. A <label> with matching "for" attribute acts as the toggle button.
+   3. When the user clicks the label, the checkbox toggles checked/unchecked.
+   4. CSS sibling selectors (~) detect the checkbox state and apply styles:
+      - .sidebar-toggle:checked ~ .sidebar-content  →  hides sidebar content
+      - .sidebar-toggle:checked ~ .sidebar-toggle-label  →  changes toggle icon
+
+   The checkbox is positioned absolutely and hidden with opacity: 0,
+   but NOT display: none, so it remains accessible to screen readers.
+   ============================================================ */
+.sidebar {
+  /* FLEXBOX: Column layout for sidebar internals.
+     flex-shrink: 0 — sidebar doesn't shrink when body needs space.
+     width — fixed width, transitions smoothly on collapse. */
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  transition: width 0.3s ease;
+
+  /* position: relative — needed for the absolutely-positioned
+     checkbox input within the sidebar. */
+  position: relative;
+}
+
+/* The actual checkbox — hidden visually but accessible */
+.sidebar-toggle {
+  /* position: absolute — takes it out of normal flow so
+     it doesn't affect layout. Positioned at top-left of sidebar. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;             /* Invisible but still interactive for a11y */
+  width: 0;
+  height: 0;
+  pointer-events: none;   /* Label handles clicks instead */
+}
+
+/* Toggle button (label) — always visible */
+.sidebar-toggle-label {
+  /* FLEXBOX: Row layout to align icon and text.
+     align-items: center — vertically center both. */
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  padding: var(--space-md);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: color 0.2s, background-color 0.2s;
+  user-select: none;       /* Prevent text selection when clicking */
+}
+
+.sidebar-toggle-label:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.toggle-icon {
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+/* SIDEBAR CONTENT — the scrollable bot list area */
+.sidebar-content {
+  /* FLEXBOX: Column layout to stack heading + list.
+     flex: 1 — fills remaining sidebar height.
+     overflow-y: auto — REQUIREMENT: own independent vertical scrolling.
+     This creates a scroll container just for the bot list,
+     independent of the main content scroll. */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+/* Custom scrollbar — dark theme consistent */
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* -----------------------------------------------------------
+   CHECKBOX HACK: Collapsed state
+   When checkbox is :checked, the sibling (~) content hides
+   and the sidebar shrinks to just show the toggle button.
+   ----------------------------------------------------------- */
+
+/* When checked: hide sidebar content */
+.sidebar-toggle:checked ~ .sidebar-content {
+  opacity: 0;               /* Fade out content */
+  max-height: 0;            /* Collapse height to zero */
+  overflow: hidden;          /* Hide any overflow during collapse */
+  padding: 0;
+  pointer-events: none;     /* Prevent interaction with hidden content */
+}
+
+/* When checked: rotate the toggle icon to indicate collapsed state */
+.sidebar-toggle:checked ~ .sidebar-toggle-label .toggle-icon {
+  transform: rotate(90deg);  /* Visual cue: icon rotates */
+}
+
+/* When checked: shrink the sidebar width */
+.sidebar-toggle:checked ~ .sidebar-toggle-label {
+  border-bottom: none;
+}
+
+/* Apply width change to the sidebar itself when checkbox is checked.
+   We use :has() — supported in modern browsers — to detect the
+   checked state from the parent element. */
+.sidebar:has(.sidebar-toggle:checked) {
+  width: 56px;               /* Collapsed width — just enough for toggle */
+}
+
+/* Hide the toggle text when collapsed */
+.sidebar-toggle:checked ~ .sidebar-toggle-label .toggle-text {
+  display: none;
+}
+
+.sidebar-heading {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   6. BOT LIST
+   Each bot shows an avatar, name, and online status.
+   ============================================================ */
+.bot-list {
+  list-style: none;          /* Remove default bullet points */
+}
+
+.bot-item {
+  /* FLEXBOX: Row layout aligns avatar and text info side by side.
+     align-items: center — vertically centers avatar with text. */
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: background-color 0.15s;
+  border-left: 3px solid transparent;  /* Reserve space for active indicator */
+}
+
+.bot-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.bot-item--active {
+  background-color: var(--bg-active);
+  border-left-color: var(--accent-primary);  /* Purple left border = active */
+}
+
+.bot-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);  /* Circular avatar */
+  flex-shrink: 0;                      /* Don't shrink avatar */
+  object-fit: cover;                   /* Prevent image distortion */
+}
+
+.bot-info {
+  /* FLEXBOX: Column layout stacks name above status.
+     min-width: 0 — allows text to truncate with ellipsis
+     instead of overflowing the flex container. */
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bot-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* Truncate long names with "..." */
+}
+
+.bot-status {
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+/* Status color coding — distinguishable for colorblind users:
+   green (online), amber (busy), and red (offline) are
+   chosen to differ in both hue AND brightness. */
+.bot-status--online {
+  color: var(--accent-success);
+}
+
+.bot-status--busy {
+  color: var(--accent-warning);
+}
+
+.bot-status--offline {
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   7. BODY CONTENT (AREA B)
+   Right side: profile zone, discussion grid, new message form.
+   ============================================================ */
+.body-content {
+  /* FLEXBOX: Column layout stacks the 3 zones vertically.
+     flex: 1 — fills all horizontal space after the sidebar.
+     min-width: 0 — prevents flex children from overflowing
+     when content is wider than available space.
+     overflow: hidden — zones handle their own scrolling. */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ============================================================
+   8. PROFILE ZONE
+   Top section showing the selected bot's profile.
+   ============================================================ */
+.profile-zone {
+  /* FLEXBOX: Row layout places avatar, details, and button in a row.
+     align-items: center — vertically centers all children.
+     flex-shrink: 0 — profile zone keeps its height, doesn't shrink. */
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+
+  padding: var(--space-lg) var(--space-xl);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 3px solid var(--accent-primary);
+}
+
+.profile-details {
+  /* flex: 1 — details expand to fill space between avatar and button.
+     min-width: 0 — allows text truncation in flex children. */
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profile-role {
+  font-size: 0.8125rem;
+  color: var(--accent-info);
+  margin-bottom: var(--space-xs);
+}
+
+.profile-description {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.profile-stats {
+  /* FLEXBOX: Row layout for stat badges.
+     flex-wrap: wrap — stats wrap to next line on small screens. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.stat {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stat strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.btn-follow {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--accent-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-follow:hover {
+  background-color: #6b5cd8;
+}
+
+.btn-follow:active {
+  transform: scale(0.97);
+}
+
+/* ============================================================
+   9. DISCUSSION ZONE
+   Scrollable area containing a grid of discussion cards.
+   ============================================================ */
+.discussion-zone {
+  /* FLEXBOX: Column layout stacks title above the grid.
+     flex: 1 — fills remaining vertical space between
+     profile zone and new message zone.
+     overflow-y: auto — REQUIREMENT: own independent vertical scrolling.
+     min-height: 0 — essential for flex overflow to work. */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: var(--space-lg) var(--space-xl);
+}
+
+/* Custom scrollbar for discussion zone */
+.discussion-zone::-webkit-scrollbar {
+  width: 8px;
+}
+
+.discussion-zone::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.discussion-zone::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.discussion-zone::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.zone-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+  flex-shrink: 0;
+}
+
+.discussion-grid {
+  /* CSS GRID: 3 columns of equal width for discussion cards.
+     Grid is preferred over flexbox here because we want a true
+     2D grid layout where cards align in both rows and columns.
+     auto-fill + minmax makes it responsive: cards reflow to
+     fewer columns as screen width decreases. */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+/* ============================================================
+   10. DISCUSSION CARDS
+   Each card shows a conversation with scrollable chat bubbles.
+   ============================================================ */
+.discussion-card {
+  /* FLEXBOX: Column layout stacks header above messages.
+     This ensures the header stays at the top and messages
+     fill remaining card height. */
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.discussion-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  /* FLEXBOX: Row layout for avatar + title.
+     align-items: center — vertically centers both. */
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--bg-active);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.card-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* -----------------------------------------------------------
+   CARD MESSAGES — scrollable chat area inside each card
+   REQUIREMENT: Each card has its own independent scroll
+   if messages are too long.
+   ----------------------------------------------------------- */
+.card-messages {
+  /* FLEXBOX: Column layout stacks messages top to bottom.
+     flex: 1 — fills remaining card space.
+     overflow-y: auto — independent scroll per card.
+     max-height — limits card height so overflow triggers scroll. */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+
+  padding: var(--space-md);
+  flex: 1;
+  overflow-y: auto;
+  max-height: 200px;        /* Triggers scroll for long conversations */
+}
+
+/* Thin scrollbar inside cards */
+.card-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.card-messages::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+/* ============================================================
+   11. CHAT BUBBLES
+   Messages styled as bubbles — user on right, bot on left.
+   ============================================================ */
+.msg {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  max-width: 85%;            /* Bubbles don't span full width */
+  word-wrap: break-word;     /* Prevent long words from overflowing */
+  overflow-wrap: break-word;
+}
+
+/* User messages — right-aligned, purple bubble */
+.msg--user {
+  background-color: var(--bubble-user);
+  color: #fff;
+  /* align-self: flex-end — in a flex column, this pushes the
+     element to the right side (cross-axis end). This is how
+     we align user messages to the right without a wrapper. */
+  align-self: flex-end;
+  border-bottom-right-radius: var(--space-xs);  /* Chat bubble tail effect */
+}
+
+/* Bot messages — left-aligned, dark bubble */
+.msg--bot {
+  background-color: var(--bubble-bot);
+  color: var(--text-primary);
+  /* align-self: flex-start — pushes to the left side.
+     Combined with flex-end on user messages, this creates
+     the classic left/right chat layout. */
+  align-self: flex-start;
+  border-bottom-left-radius: var(--space-xs);   /* Chat bubble tail effect */
+}
+
+/* ============================================================
+   12. NEW MESSAGE ZONE
+   Bottom bar with title, textarea, and publish button.
+   ============================================================ */
+.new-message-zone {
+  padding: var(--space-md) var(--space-xl);
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;            /* Don't shrink — always visible at bottom */
+}
+
+.new-message-zone .zone-title {
+  margin-bottom: var(--space-sm);
+  font-size: 0.8125rem;
+}
+
+.message-form {
+  /* FLEXBOX: Row layout places textarea and button side by side.
+     align-items: flex-end — aligns button to bottom of textarea.
+     gap — spacing between textarea and button. */
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-md);
+}
+
+.message-form textarea {
+  /* flex: 1 — textarea expands to fill available width,
+     leaving just enough room for the button. */
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;          /* Allow vertical resize only */
+  transition: border-color 0.2s;
+}
+
+.message-form textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.message-form textarea:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.2);
+}
+
+.btn-publish {
+  padding: var(--space-sm) var(--space-xl);
+  background-color: var(--accent-success);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-publish:hover {
+  background-color: #27b573;
+}
+
+.btn-publish:active {
+  transform: scale(0.97);
+}
+
+/* ============================================================
+   13. RESPONSIVE DESIGN
+   Adapts layout for tablets and mobile devices.
+   ============================================================ */
+
+/* --- Tablet: <= 1024px --- */
+@media (max-width: 1024px) {
+  .site-header {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-md);
+  }
+
+  /* Reduce sidebar width on tablets */
+  :root {
+    --sidebar-width: 220px;
+  }
+
+  .profile-zone {
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+
+  .profile-avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .discussion-zone {
+    padding: var(--space-md);
+  }
+
+  .new-message-zone {
+    padding: var(--space-md);
+  }
+}
+
+/* --- Small tablet / large mobile: <= 768px --- */
+@media (max-width: 768px) {
+  .site-header {
+    /* FLEXBOX: Switch to wrapping so items flow to next line.
+       flex-wrap: wrap — when items don't fit in one row,
+       they wrap to a new line instead of overflowing. */
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .site-title {
+    font-size: 1.25rem;
+  }
+
+  .search-bar {
+    /* order: 3 — reorders search bar to appear after nav on wrap.
+       flex-basis: 100% — forces it to its own line when wrapped. */
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  /* Collapse sidebar by default on small screens */
+  .sidebar {
+    width: 56px;
+  }
+
+  .sidebar .sidebar-content {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .sidebar .sidebar-toggle-label .toggle-text {
+    display: none;
+  }
+
+  /* Unchecked = expand on mobile (inverted behavior) */
+  .sidebar:has(.sidebar-toggle:checked) {
+    width: var(--sidebar-width);
+  }
+
+  .sidebar-toggle:checked ~ .sidebar-content {
+    opacity: 1;
+    max-height: 100vh;
+    overflow-y: auto;
+    pointer-events: auto;
+  }
+
+  .sidebar-toggle:checked ~ .sidebar-toggle-label .toggle-text {
+    display: inline;
+  }
+
+  /* Profile stacks vertically on small screens */
+  .profile-zone {
+    /* FLEXBOX: flex-wrap: wrap — allows avatar and details
+       to stack vertically if there's not enough horizontal space. */
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .profile-details {
+    flex-basis: 100%;          /* Full width — forces to new line */
+  }
+
+  .profile-stats {
+    justify-content: center;
+  }
+
+  /* REQUIREMENT: discussion cards stack vertically on narrow screens.
+     Switch from multi-column grid to single column. */
+  .discussion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Message form stacks vertically on mobile */
+  .message-form {
+    /* FLEXBOX: flex-direction: column — stacks textarea above button.
+       align-items: stretch — both children fill full width. */
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* --- Mobile: <= 480px --- */
+@media (max-width: 480px) {
+  .site-header {
+    padding: var(--space-sm);
+  }
+
+  .site-title {
+    font-size: 1.125rem;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .profile-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .profile-name {
+    font-size: 1.1rem;
+  }
+
+  .profile-description {
+    font-size: 0.75rem;
+  }
+
+  .discussion-zone {
+    padding: var(--space-sm);
+  }
+
+  .new-message-zone {
+    padding: var(--space-sm);
+  }
+
+  .msg {
+    font-size: 0.75rem;
+    max-width: 90%;
+  }
+}
+
+/* ============================================================
+   14. ACCESSIBILITY ENHANCEMENTS
+   High contrast and motion preferences.
+   ============================================================ */
+
+/* Respect user's preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode — increase all contrasts further */
+@media (prefers-contrast: high) {
+  :root {
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #141414;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --border-color: #444444;
+    --bubble-user: #5b4fd4;
+    --bubble-bot: #333333;
+  }
+}
+
+/* ============================================================
+   END OF STYLESHEET
+   ============================================================ */
