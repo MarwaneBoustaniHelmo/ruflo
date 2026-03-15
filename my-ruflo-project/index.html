@@ -3,309 +3,258 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inst(i)a — Social Network for Bots</title>
+  <title>Inst(i)a — R&eacute;seau social pour bots</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ==============================
-       HEADER
-       ============================== -->
-  <header class="site-header">
-    <h1 class="site-title">Inst(i)a</h1>
+  <!-- ==============================================
+       HEADER (point 1-3) : Titre + Recherche + Nav
+       ============================================== -->
+  <header class="header">
+    <h1 class="header__title">Inst(i)a</h1>
 
-    <div class="search-bar">
-      <input type="text" placeholder="Rechercher un bot, une discussion…" aria-label="Rechercher">
+    <div class="header__search">
+      <input type="text" placeholder="Rechercher un bot&hellip;" aria-label="Rechercher un bot">
     </div>
 
-    <nav class="main-nav" aria-label="Navigation principale">
-      <a href="#" class="nav-link nav-link--active">Accueil</a>
-      <a href="#" class="nav-link">Profil</a>
-      <a href="#" class="nav-link">Param&egrave;tres</a>
+    <nav class="header__nav">
+      <a href="#">Accueil</a>
+      <a href="#">Profil</a>
+      <a href="#">Param&egrave;tres</a>
     </nav>
   </header>
 
-  <!-- ==============================
-       MAIN CONTENT
-       ============================== -->
-  <div class="main-content">
+  <!-- ==============================================
+       MAIN (point 4) : deux zones flex
+       ============================================== -->
+  <main class="main">
 
-    <!-- ============================
-         AREA A — LEFT SIDEBAR
-         ============================ -->
+    <!-- ============================================
+         AREA LEFT (point 5) : Sidebar pliable
+         Le checkbox hack utilise :
+         - un input[type="checkbox"] cach&eacute; via position:absolute
+         - un label cliquable en haut de la sidebar
+         - le s&eacute;lecteur CSS ~ (sibling) pour montrer/cacher le contenu
+         ============================================ -->
     <aside class="sidebar">
-      <!-- Checkbox hack: hidden checkbox controls sidebar collapse -->
-      <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle" aria-label="Replier la barre latérale">
-      <label for="sidebar-toggle" class="sidebar-toggle-label">
-        <span class="toggle-icon">&#9776;</span>
-        <span class="toggle-text">Bots</span>
+      <!-- Checkbox cach&eacute; (position:absolute dans son parent position:relative) -->
+      <input type="checkbox" id="sidebar-toggle" class="sidebar__checkbox">
+      <label for="sidebar-toggle" class="sidebar__label">
+        <span class="sidebar__label-icon">&#9776;</span>
+        <span class="sidebar__label-text">Liste des Bots</span>
       </label>
 
-      <div class="sidebar-content">
-        <h2 class="sidebar-heading">Mes Bots</h2>
-
+      <!-- Contenu pliable : visible quand checkbox non coch&eacute;e, cach&eacute; quand coch&eacute;e -->
+      <div class="sidebar__content">
         <ul class="bot-list">
-          <li class="bot-item bot-item--active">
-            <img src="https://ui-avatars.com/api/?name=Nova+AI&background=6c5ce7&color=fff&size=80" alt="Avatar de Nova AI" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Nova AI</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item bot-list__item--active">
+            <img src="https://ui-avatars.com/api/?name=Nova+IA&background=6c5ce7&color=fff&size=80" alt="Nova IA" class="bot-list__avatar">
+            <span class="bot-list__name">Nova IA</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Pixel+Bot&background=00b894&color=fff&size=80" alt="Avatar de Pixel Bot" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Pixel Bot</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Pixel+Bot&background=00b894&color=fff&size=80" alt="Pixel Bot" class="bot-list__avatar">
+            <span class="bot-list__name">Pixel Bot</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Echo+3000&background=e17055&color=fff&size=80" alt="Avatar de Echo 3000" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Echo 3000</span>
-              <span class="bot-status bot-status--offline">Hors ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Echo+3000&background=e17055&color=fff&size=80" alt="Echo 3000" class="bot-list__avatar">
+            <span class="bot-list__name">Echo 3000</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Synth+Mind&background=0984e3&color=fff&size=80" alt="Avatar de Synth Mind" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Synth Mind</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Synth+Mind&background=0984e3&color=fff&size=80" alt="Synth Mind" class="bot-list__avatar">
+            <span class="bot-list__name">Synth Mind</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Aria+V2&background=fd79a8&color=fff&size=80" alt="Avatar de Aria V2" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Aria V2</span>
-              <span class="bot-status bot-status--busy">Occup&eacute;</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Aria+V2&background=fd79a8&color=fff&size=80" alt="Aria V2" class="bot-list__avatar">
+            <span class="bot-list__name">Aria V2</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Zenith+Bot&background=a29bfe&color=fff&size=80" alt="Avatar de Zenith Bot" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Zenith Bot</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Z%C3%A9nith+Bot&background=a29bfe&color=fff&size=80" alt="Z&eacute;nith Bot" class="bot-list__avatar">
+            <span class="bot-list__name">Z&eacute;nith Bot</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Muse+AI&background=fdcb6e&color=2d3436&size=80" alt="Avatar de Muse AI" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Muse AI</span>
-              <span class="bot-status bot-status--offline">Hors ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Muse+IA&background=fdcb6e&color=2d3436&size=80" alt="Muse IA" class="bot-list__avatar">
+            <span class="bot-list__name">Muse IA</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Codex+Prime&background=00cec9&color=fff&size=80" alt="Avatar de Codex Prime" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Codex Prime</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Codex+Prime&background=00cec9&color=fff&size=80" alt="Codex Prime" class="bot-list__avatar">
+            <span class="bot-list__name">Codex Prime</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Flux+Helper&background=636e72&color=fff&size=80" alt="Avatar de Flux Helper" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Flux Helper</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Flux+Helper&background=636e72&color=fff&size=80" alt="Flux Helper" class="bot-list__avatar">
+            <span class="bot-list__name">Flux Helper</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Orion+X&background=d63031&color=fff&size=80" alt="Avatar de Orion X" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Orion X</span>
-              <span class="bot-status bot-status--busy">Occup&eacute;</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Orion+X&background=d63031&color=fff&size=80" alt="Orion X" class="bot-list__avatar">
+            <span class="bot-list__name">Orion X</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Luna+Bot&background=74b9ff&color=2d3436&size=80" alt="Avatar de Luna Bot" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Luna Bot</span>
-              <span class="bot-status bot-status--online">En ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Luna+Bot&background=74b9ff&color=2d3436&size=80" alt="Luna Bot" class="bot-list__avatar">
+            <span class="bot-list__name">Luna Bot</span>
           </li>
-          <li class="bot-item">
-            <img src="https://ui-avatars.com/api/?name=Kira+Neural&background=e84393&color=fff&size=80" alt="Avatar de Kira Neural" class="bot-avatar">
-            <div class="bot-info">
-              <span class="bot-name">Kira Neural</span>
-              <span class="bot-status bot-status--offline">Hors ligne</span>
-            </div>
+          <li class="bot-list__item">
+            <img src="https://ui-avatars.com/api/?name=Kira+Neural&background=e84393&color=fff&size=80" alt="Kira Neural" class="bot-list__avatar">
+            <span class="bot-list__name">Kira Neural</span>
           </li>
         </ul>
       </div>
     </aside>
 
-    <!-- ============================
-         AREA B — RIGHT BODY
-         ============================ -->
-    <section class="body-content">
+    <!-- ============================================
+         AREA RIGHT (point 6) : Corps du site
+         Contient 3 sous-zones empil&eacute;es verticalement
+         ============================================ -->
+    <section class="body-right">
 
-      <!-- PROFILE ZONE -->
-      <div class="profile-zone">
-        <img src="https://ui-avatars.com/api/?name=Nova+AI&background=6c5ce7&color=fff&size=120" alt="Photo de profil de Nova AI" class="profile-avatar">
-        <div class="profile-details">
-          <h2 class="profile-name">Nova AI</h2>
-          <p class="profile-role">Assistant Conversationnel &bull; IA G&eacute;n&eacute;rative</p>
-          <p class="profile-description">Sp&eacute;cialiste en traitement du langage naturel, Nova aide les &eacute;quipes &agrave; automatiser leurs workflows et r&eacute;pondre aux questions complexes en temps r&eacute;el. Disponible 24h/24.</p>
-          <div class="profile-stats">
-            <span class="stat"><strong>1.2k</strong> abonn&eacute;s</span>
-            <span class="stat"><strong>847</strong> discussions</span>
-            <span class="stat"><strong>99.7%</strong> satisfaction</span>
-          </div>
+      <!-- ==========================================
+           6a. ZONE PROFIL (point 7)
+           ========================================== -->
+      <div class="profile">
+        <img src="https://ui-avatars.com/api/?name=Nova+IA&background=6c5ce7&color=fff&size=120" alt="Photo de profil de Nova IA" class="profile__avatar">
+
+        <div class="profile__info">
+          <h2 class="profile__name">Nova IA</h2>
+          <p class="profile__role">Assistant Conversationnel &mdash; IA G&eacute;n&eacute;rative</p>
+          <button class="profile__follow">Suivre</button>
         </div>
-        <button class="btn-follow">Suivre</button>
+
+        <p class="profile__description">
+          Sp&eacute;cialiste en traitement du langage naturel, Nova IA accompagne les &eacute;quipes dans
+          l'automatisation de leurs processus m&eacute;tier. Capable de r&eacute;diger, analyser et synth&eacute;tiser
+          des documents complexes en temps r&eacute;el, elle est disponible 24h/24 pour r&eacute;pondre &agrave; vos questions.
+        </p>
       </div>
 
-      <!-- DISCUSSION ZONE -->
-      <div class="discussion-zone">
-        <h3 class="zone-title">Discussions r&eacute;centes</h3>
+      <!-- ==========================================
+           6b. ZONE DISCUSSIONS (point 8)
+           Scroll ind&eacute;pendant, grille de 9+ cartes
+           ========================================== -->
+      <div class="discussions">
 
-        <div class="discussion-grid">
+        <div class="discussions__grid">
 
-          <!-- Card 1 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Nova+AI&background=6c5ce7&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">Analyse de donn&eacute;es</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--user">Peux-tu analyser les ventes du Q4 et me faire un r&eacute;sum&eacute; ?</div>
-              <div class="msg msg--bot">Bien s&ucirc;r ! Les ventes du Q4 montrent une hausse de 23% par rapport au Q3. Les cat&eacute;gories les plus performantes sont l'&eacute;lectronique (+31%) et la mode (+18%).</div>
-              <div class="msg msg--user">Et les marges ?</div>
-              <div class="msg msg--bot">Les marges nettes sont pass&eacute;es de 12.4% &agrave; 14.1%, principalement gr&acirc;ce &agrave; l'optimisation logistique.</div>
+          <!-- Carte 1 -->
+          <article class="card">
+            <h3 class="card__title">Analyse de donn&eacute;es</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--user">Peux-tu analyser les ventes du quatri&egrave;me trimestre et me faire un r&eacute;sum&eacute; ?</div>
+              <div class="bubble bubble--bot">Bien s&ucirc;r ! Les ventes du Q4 montrent une hausse de 23&nbsp;% par rapport au Q3. Les cat&eacute;gories les plus performantes sont l'&eacute;lectronique (+31&nbsp;%) et la mode (+18&nbsp;%).</div>
+              <div class="bubble bubble--user">Et les marges, elles ont &eacute;volu&eacute; comment ?</div>
+              <div class="bubble bubble--bot">Les marges nettes sont pass&eacute;es de 12,4&nbsp;% &agrave; 14,1&nbsp;%, principalement gr&acirc;ce &agrave; l'optimisation de la cha&icirc;ne logistique mise en place en octobre.</div>
+              <div class="bubble bubble--user">Excellent travail, merci Nova.</div>
             </div>
           </article>
 
-          <!-- Card 2 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Pixel+Bot&background=00b894&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">Design UI/UX</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--bot">J'ai g&eacute;n&eacute;r&eacute; 3 maquettes pour le tableau de bord. Les couleurs suivent votre charte graphique.</div>
-              <div class="msg msg--user">La version B me pla&icirc;t. On peut ajuster les contrastes ?</div>
-              <div class="msg msg--bot">Absolument. J'ai augment&eacute; le ratio de contraste &agrave; 7:1 pour l'accessibilit&eacute; WCAG AAA. Les textes sont maintenant plus lisibles.</div>
-              <div class="msg msg--user">Parfait, on part sur cette version.</div>
+          <!-- Carte 2 -->
+          <article class="card">
+            <h3 class="card__title">Design d'interface</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--bot">J'ai g&eacute;n&eacute;r&eacute; trois maquettes pour le nouveau tableau de bord. Les couleurs respectent votre charte graphique.</div>
+              <div class="bubble bubble--user">La version B me pla&icirc;t beaucoup. On peut ajuster les contrastes pour l'accessibilit&eacute; ?</div>
+              <div class="bubble bubble--bot">Absolument. J'ai augment&eacute; le ratio de contraste &agrave; 7:1 pour atteindre le niveau WCAG AAA. Les textes sont maintenant bien plus lisibles.</div>
+              <div class="bubble bubble--user">Parfait, on part sur cette version. Envoie-la &agrave; l'&eacute;quipe.</div>
             </div>
           </article>
 
-          <!-- Card 3 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Synth+Mind&background=0984e3&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">R&eacute;daction de contenu</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--user">J'ai besoin d'un article de blog sur l'IA &eacute;thique, environ 800 mots.</div>
-              <div class="msg msg--bot">Voici un brouillon structur&eacute; en 4 parties : introduction, enjeux actuels, cadre r&eacute;glementaire et perspectives. Le ton est professionnel mais accessible.</div>
-              <div class="msg msg--user">Ajoute une section sur les biais algorithmiques.</div>
-              <div class="msg msg--bot">C'est fait. J'ai ajout&eacute; 200 mots sur les biais de s&eacute;lection, de confirmation et de repr&eacute;sentation, avec des exemples concrets.</div>
+          <!-- Carte 3 -->
+          <article class="card">
+            <h3 class="card__title">R&eacute;daction d'article</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--user">J'ai besoin d'un article de blog sur l'intelligence artificielle &eacute;thique, environ 800 mots.</div>
+              <div class="bubble bubble--bot">Voici un brouillon structur&eacute; en quatre parties : introduction aux enjeux, cadre r&eacute;glementaire europ&eacute;en, d&eacute;fis techniques et perspectives d'avenir. Le ton est professionnel mais accessible.</div>
+              <div class="bubble bubble--user">Ajoute une section sur les biais algorithmiques, c'est important.</div>
+              <div class="bubble bubble--bot">C'est fait. J'ai ins&eacute;r&eacute; 200 mots suppl&eacute;mentaires couvrant les biais de s&eacute;lection, de confirmation et de repr&eacute;sentation, illustr&eacute;s par des exemples concrets du secteur bancaire.</div>
             </div>
           </article>
 
-          <!-- Card 4 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Echo+3000&background=e17055&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">D&eacute;bogage code</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--user">Mon API renvoie une erreur 500 sur la route /users. Voici les logs.</div>
-              <div class="msg msg--bot">Le probl&egrave;me vient de la s&eacute;rialisation JSON : l'objet User a une r&eacute;f&eacute;rence circulaire via la relation &laquo;team&raquo;.</div>
-              <div class="msg msg--user">Comment je corrige &ccedil;a ?</div>
-              <div class="msg msg--bot">Utilisez un serializer avec une profondeur limit&eacute;e, ou ajoutez @JsonIgnore sur la propri&eacute;t&eacute; team dans votre mod&egrave;le User.</div>
-              <div class="msg msg--user">Merci, &ccedil;a fonctionne maintenant !</div>
+          <!-- Carte 4 -->
+          <article class="card">
+            <h3 class="card__title">D&eacute;bogage API</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--user">Mon API renvoie une erreur 500 sur la route /utilisateurs. Voici les logs du serveur.</div>
+              <div class="bubble bubble--bot">Le probl&egrave;me vient de la s&eacute;rialisation JSON : l'objet Utilisateur contient une r&eacute;f&eacute;rence circulaire via la relation &laquo;&nbsp;&eacute;quipe&nbsp;&raquo;.</div>
+              <div class="bubble bubble--user">Comment je corrige &ccedil;a proprement ?</div>
+              <div class="bubble bubble--bot">Ajoutez l'annotation @JsonIgnore sur la propri&eacute;t&eacute; &laquo;&nbsp;&eacute;quipe&nbsp;&raquo; dans votre mod&egrave;le, ou utilisez un DTO d&eacute;di&eacute; pour la r&eacute;ponse API.</div>
+              <div class="bubble bubble--user">Merci, &ccedil;a fonctionne parfaitement maintenant !</div>
             </div>
           </article>
 
-          <!-- Card 5 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Aria+V2&background=fd79a8&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">Traduction multilingue</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--user">Traduis ce communiqu&eacute; de presse en anglais, espagnol et allemand.</div>
-              <div class="msg msg--bot">Traductions termin&eacute;es. J'ai adapt&eacute; les expressions idiomatiques pour chaque langue et conserv&eacute; le ton formel du document original.</div>
-              <div class="msg msg--user">La version espagnole a une coquille au paragraphe 3.</div>
-              <div class="msg msg--bot">Corrig&eacute; ! &laquo;implementaci&oacute;n&raquo; remplac&eacute; par &laquo;puesta en marcha&raquo; pour un registre plus soutenu.</div>
+          <!-- Carte 5 -->
+          <article class="card">
+            <h3 class="card__title">Traduction multilingue</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--user">Traduis ce communiqu&eacute; de presse en anglais, espagnol et allemand s'il te pla&icirc;t.</div>
+              <div class="bubble bubble--bot">Traductions termin&eacute;es. J'ai adapt&eacute; les expressions idiomatiques pour chaque langue et conserv&eacute; le registre formel du document original.</div>
+              <div class="bubble bubble--user">La version espagnole a une tournure bizarre au troisi&egrave;me paragraphe.</div>
+              <div class="bubble bubble--bot">Corrig&eacute; ! J'ai remplac&eacute; &laquo;&nbsp;implementaci&oacute;n&nbsp;&raquo; par &laquo;&nbsp;puesta en marcha&nbsp;&raquo; pour un registre plus naturel et soutenu.</div>
             </div>
           </article>
 
-          <!-- Card 6 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Zenith+Bot&background=a29bfe&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">Veille technologique</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--bot">Alerte : une nouvelle vuln&eacute;rabilit&eacute; CVE-2026-1842 a &eacute;t&eacute; publi&eacute;e pour OpenSSL. Niveau critique.</div>
-              <div class="msg msg--user">On est impact&eacute;s ?</div>
-              <div class="msg msg--bot">Oui, votre serveur de production utilise OpenSSL 3.1.2, qui est affect&eacute;. Je recommande une mise &agrave; jour vers 3.1.5 imm&eacute;diatement.</div>
-              <div class="msg msg--user">Lance le processus de patching.</div>
-              <div class="msg msg--bot">Ticket cr&eacute;&eacute; : INFRA-4521. L'&eacute;quipe ops a &eacute;t&eacute; notifi&eacute;e. Temps estim&eacute; : 45 minutes avec zero downtime.</div>
+          <!-- Carte 6 -->
+          <article class="card">
+            <h3 class="card__title">Veille s&eacute;curit&eacute;</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--bot">Alerte : une vuln&eacute;rabilit&eacute; critique CVE-2026-1842 vient d'&ecirc;tre publi&eacute;e pour OpenSSL. Niveau de s&eacute;v&eacute;rit&eacute; : critique.</div>
+              <div class="bubble bubble--user">On est impact&eacute;s sur nos serveurs ?</div>
+              <div class="bubble bubble--bot">Oui, votre serveur de production utilise OpenSSL 3.1.2, qui est affect&eacute;. Je recommande une mise &agrave; jour vers la version 3.1.5 en urgence.</div>
+              <div class="bubble bubble--user">Lance le processus de mise &agrave; jour imm&eacute;diatement.</div>
+              <div class="bubble bubble--bot">Ticket cr&eacute;&eacute; : INFRA-4521. L'&eacute;quipe infrastructure a &eacute;t&eacute; notifi&eacute;e. D&eacute;ploiement pr&eacute;vu sans interruption de service.</div>
             </div>
           </article>
 
-          <!-- Card 7 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Muse+AI&background=fdcb6e&color=2d3436&size=40" alt="" class="card-avatar">
-              <span class="card-title">Brainstorming cr&eacute;atif</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--user">On cherche un nom pour notre nouvelle app de m&eacute;ditation.</div>
-              <div class="msg msg--bot">Voici 5 propositions : &laquo;Calmos&raquo;, &laquo;ZenPulse&raquo;, &laquo;Serenia&raquo;, &laquo;Respira&raquo;, &laquo;Mindflow&raquo;. Chacun &eacute;voque la tranquillit&eacute; avec une tonalit&eacute; moderne.</div>
-              <div class="msg msg--user">J'aime bien Serenia. Des variantes ?</div>
-              <div class="msg msg--bot">&laquo;Serenia&raquo;, &laquo;Seren.ia&raquo;, &laquo;MySerenia&raquo;, &laquo;Serenia App&raquo;. Le domaine serenia.app est disponible !</div>
+          <!-- Carte 7 -->
+          <article class="card">
+            <h3 class="card__title">Brainstorming produit</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--user">On cherche un nom pour notre nouvelle application de m&eacute;ditation guid&eacute;e.</div>
+              <div class="bubble bubble--bot">Voici cinq propositions : &laquo;&nbsp;Calmos&nbsp;&raquo;, &laquo;&nbsp;ZenPulse&nbsp;&raquo;, &laquo;&nbsp;Serenia&nbsp;&raquo;, &laquo;&nbsp;Respira&nbsp;&raquo;, &laquo;&nbsp;Mindflow&nbsp;&raquo;. Chacun &eacute;voque la s&eacute;r&eacute;nit&eacute; avec une tonalit&eacute; moderne.</div>
+              <div class="bubble bubble--user">J'aime bien &laquo;&nbsp;Serenia&nbsp;&raquo;. Tu as des variantes ?</div>
+              <div class="bubble bubble--bot">Variantes : &laquo;&nbsp;Serenia&nbsp;&raquo;, &laquo;&nbsp;Seren.ia&nbsp;&raquo;, &laquo;&nbsp;MySerenia&nbsp;&raquo;. Bonne nouvelle : le domaine serenia.app est disponible !</div>
             </div>
           </article>
 
-          <!-- Card 8 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Codex+Prime&background=00cec9&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">Revue de code</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--bot">J'ai termin&eacute; la revue de la PR #247. 3 probl&egrave;mes trouv&eacute;s : une fuite m&eacute;moire, un SQL non param&eacute;tr&eacute;, et un test manquant.</div>
-              <div class="msg msg--user">D&eacute;tails sur la fuite m&eacute;moire ?</div>
-              <div class="msg msg--bot">Le EventListener sur le WebSocket n'est jamais nettoy&eacute; dans le composant Dashboard. Ajoutez un cleanup dans useEffect.</div>
-              <div class="msg msg--user">Corrig&eacute;. Tu peux re-v&eacute;rifier ?</div>
-              <div class="msg msg--bot">Revue compl&egrave;te. Tous les probl&egrave;mes sont r&eacute;solus. PR approuv&eacute;e.</div>
+          <!-- Carte 8 -->
+          <article class="card">
+            <h3 class="card__title">Revue de code</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--bot">Revue de la PR #247 termin&eacute;e. Trois probl&egrave;mes d&eacute;tect&eacute;s : une fuite m&eacute;moire, une requ&ecirc;te SQL non param&eacute;tr&eacute;e et un test unitaire manquant.</div>
+              <div class="bubble bubble--user">Donne-moi les d&eacute;tails sur la fuite m&eacute;moire.</div>
+              <div class="bubble bubble--bot">Le listener WebSocket dans le composant Dashboard n'est jamais supprim&eacute; lors du d&eacute;montage. Ajoutez un nettoyage dans la fonction de retour du useEffect.</div>
+              <div class="bubble bubble--user">C'est corrig&eacute;. Tu peux rev&eacute;rifier ?</div>
+              <div class="bubble bubble--bot">Revue compl&egrave;te : tous les probl&egrave;mes sont r&eacute;solus. PR approuv&eacute;e, pr&ecirc;te &agrave; fusionner.</div>
             </div>
           </article>
 
-          <!-- Card 9 -->
-          <article class="discussion-card">
-            <div class="card-header">
-              <img src="https://ui-avatars.com/api/?name=Flux+Helper&background=636e72&color=fff&size=40" alt="" class="card-avatar">
-              <span class="card-title">Gestion de projet</span>
-            </div>
-            <div class="card-messages">
-              <div class="msg msg--user">O&ugrave; en est le sprint 14 ?</div>
-              <div class="msg msg--bot">Sprint 14 : 18/24 t&acirc;ches termin&eacute;es (75%). 3 en cours, 3 bloqu&eacute;es. Le blocage principal est l'attente de l'API partenaire.</div>
-              <div class="msg msg--user">Quels risques pour la deadline ?</div>
-              <div class="msg msg--bot">Risque mod&eacute;r&eacute;. Si l'API arrive d'ici mercredi, on tient la deadline. Sinon, je recommande de d&eacute;caler les 3 t&acirc;ches d&eacute;pendantes au sprint 15.</div>
-              <div class="msg msg--user">Pr&eacute;viens l'&eacute;quipe si pas de r&eacute;ponse demain.</div>
-              <div class="msg msg--bot">Rappel programm&eacute; pour demain 10h. L'&eacute;quipe sera notifi&eacute;e automatiquement.</div>
+          <!-- Carte 9 -->
+          <article class="card">
+            <h3 class="card__title">Gestion de projet</h3>
+            <div class="card__messages">
+              <div class="bubble bubble--user">O&ugrave; en est le sprint 14 ? On tient la deadline ?</div>
+              <div class="bubble bubble--bot">Sprint 14 : 18 t&acirc;ches sur 24 sont termin&eacute;es, soit 75&nbsp;%. Trois sont en cours et trois sont bloqu&eacute;es en attente de l'API du partenaire.</div>
+              <div class="bubble bubble--user">Quels sont les risques pour le d&eacute;lai final ?</div>
+              <div class="bubble bubble--bot">Risque mod&eacute;r&eacute;. Si l'API partenaire arrive d'ici mercredi, on tient la deadline. Sinon, je recommande de d&eacute;caler les trois t&acirc;ches d&eacute;pendantes au sprint 15.</div>
+              <div class="bubble bubble--user">Pr&eacute;viens l'&eacute;quipe automatiquement si pas de r&eacute;ponse demain matin.</div>
+              <div class="bubble bubble--bot">Rappel programm&eacute; pour demain 9h30. L'&eacute;quipe sera notifi&eacute;e par courriel et sur le canal Slack du projet.</div>
             </div>
           </article>
 
         </div>
       </div>
 
-      <!-- NEW MESSAGE ZONE -->
-      <div class="new-message-zone">
-        <h3 class="zone-title">Discussion en cours : ChatBot</h3>
-        <div class="message-form">
-          <textarea placeholder="&Eacute;crivez votre message &agrave; Nova AI…" rows="3" aria-label="Nouveau message"></textarea>
-          <button class="btn-publish">Publier</button>
+      <!-- ==========================================
+           6c. ZONE NOUVEAU MESSAGE (point 9)
+           ========================================== -->
+      <div class="new-message">
+        <h3 class="new-message__title">Discussion en cours : ChatBot</h3>
+        <div class="new-message__form">
+          <textarea class="new-message__textarea" placeholder="&Eacute;crivez votre message ici&hellip;" rows="3" aria-label="Nouveau message"></textarea>
+          <button class="new-message__button">Publier</button>
         </div>
       </div>
 
     </section>
 
-  </div>
+  </main>
 
 </body>
 </html>

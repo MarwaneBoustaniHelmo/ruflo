@@ -1,978 +1,1108 @@
-/* ============================================================
+/* ================================================================
    INST(I)A — style.css
-   Social Network Interface for Bots
-   Pure CSS, dark theme, fully responsive
-   ============================================================ */
+   R&eacute;seau social pour bots — Th&egrave;me sombre, HTML + CSS uniquement
+   ================================================================
 
-/* ============================================================
-   1. CSS CUSTOM PROPERTIES (Design Tokens)
-   We define all colors, spacing, and radii as variables
-   for easy theming and consistency.
-   ============================================================ */
+   TABLE DES MATIERES :
+   1.  Variables CSS (design tokens)
+   2.  Reset & base
+   3.  Header (titre, recherche, navigation)
+   4.  Main (disposition flex &agrave; deux colonnes)
+   5.  Sidebar pliable (checkbox hack expliqu&eacute; en d&eacute;tail)
+   6.  Liste des bots
+   7.  Corps droit (area right)
+   8.  Zone profil
+   9.  Zone discussions (scroll + grille)
+   10. Cartes de discussion
+   11. Bulles de chat
+   12. Zone nouveau message
+   13. Responsive design
+   14. Accessibilit&eacute;
+   ================================================================ */
+
+
+/* ================================================================
+   1. VARIABLES CSS (Design Tokens)
+   ----------------------------------------------------------------
+   On centralise toutes les couleurs et tailles ici pour garantir
+   la coh&eacute;rence du th&egrave;me sombre et faciliter la maintenance.
+   Les couleurs ont &eacute;t&eacute; choisies pour offrir un contraste &eacute;lev&eacute;
+   (WCAG AA minimum) et &ecirc;tre distinguables par les daltoniens.
+   ================================================================ */
 :root {
-  /* Background layers — darkest to lightest */
-  --bg-primary: #0d0d12;        /* Main page background */
-  --bg-secondary: #14141c;      /* Sidebar, panels */
-  --bg-tertiary: #1a1a26;       /* Cards, inputs */
-  --bg-hover: #22222f;          /* Hover state backgrounds */
-  --bg-active: #2a2a3a;         /* Active/selected state */
+  --bg-body: #0d0d14;
+  --bg-header: #12121c;
+  --bg-sidebar: #12121c;
+  --bg-card: #1a1a28;
+  --bg-input: #1a1a28;
+  --bg-hover: #222234;
+  --bg-active: #2a2a40;
 
-  /* Text colors — high contrast for accessibility (WCAG AA) */
-  --text-primary: #e8e8f0;      /* Main text — ratio ~13:1 on bg-primary */
-  --text-secondary: #a0a0b8;    /* Secondary text — ratio ~6:1 */
-  --text-muted: #6b6b80;        /* Muted/disabled — ratio ~3.5:1 */
+  --text-primary: #e8e8f0;    /* Ratio ~13:1 sur bg-body = tr&egrave;s lisible */
+  --text-secondary: #a0a0b8;  /* Ratio ~6:1 = WCAG AA */
+  --text-muted: #6b6b82;
 
-  /* Accent colors — chosen to be distinguishable for colorblind users */
-  --accent-primary: #7c6df0;    /* Purple — main accent */
-  --accent-success: #2ecc87;    /* Green — online status */
-  --accent-warning: #f0a030;    /* Amber — busy status */
-  --accent-danger: #e05050;     /* Red — offline/error */
-  --accent-info: #4da6ff;       /* Blue — links, info */
+  --accent: #7c6df0;          /* Violet — couleur principale */
+  --accent-hover: #6b5cd8;
+  --accent-green: #2ecc87;    /* Bouton Publier */
+  --accent-green-hover: #27b575;
 
-  /* Chat bubble colors */
-  --bubble-user: #7c6df0;       /* User messages — purple */
-  --bubble-bot: #2a2a3a;        /* Bot messages — dark gray */
+  --bubble-user: #7c6df0;     /* Bulle utilisateur (violet) */
+  --bubble-bot: #2a2a40;      /* Bulle bot (gris fonc&eacute;) */
 
-  /* Borders and shadows */
-  --border-color: #2a2a3a;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --border: #2a2a3a;
+  --radius: 8px;
+  --radius-round: 50%;
 
-  /* Spacing */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-
-  /* Border radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-full: 50%;
-
-  /* Sidebar width */
-  --sidebar-width: 260px;
-
-  /* Font stack — system fonts for performance, dyslexia-friendly choices */
-  --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Police syst&egrave;me — bonne lisibilit&eacute;, adapt&eacute;e aux dyslexiques
+     car les caract&egrave;res sont bien diff&eacute;renci&eacute;s (b/d, p/q, I/l) */
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 
-/* ============================================================
+
+/* ================================================================
    2. RESET & BASE
-   Minimal reset for consistent cross-browser rendering.
-   ============================================================ */
+   ----------------------------------------------------------------
+   Reset minimal pour un rendu identique sur tous les navigateurs.
+   ================================================================ */
 *,
 *::before,
 *::after {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;   /* Include padding/border in element dimensions */
-}
-
-html {
-  font-size: 16px;           /* Base font size for rem calculations */
-  -webkit-text-size-adjust: 100%;
+  /* box-sizing: border-box — le padding et le border sont inclus
+     dans la largeur/hauteur de l'&eacute;l&eacute;ment. Sans cela, ajouter du
+     padding agrandirait l'&eacute;l&eacute;ment au-del&agrave; de sa taille d&eacute;finie. */
+  box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-body);
-  font-size: 0.9375rem;       /* 15px — slightly larger for readability */
-  line-height: 1.6;           /* Generous line height for dyslexia accessibility */
-  letter-spacing: 0.01em;     /* Slight letter spacing aids readability */
+  font-family: var(--font);
+  font-size: 0.9375rem;      /* 15px — l&eacute;g&egrave;rement plus grand pour la lisibilit&eacute; */
+  line-height: 1.6;          /* Interligne g&eacute;n&eacute;reux, favorable aux dyslexiques */
+  letter-spacing: 0.01em;
   color: var(--text-primary);
-  background-color: var(--bg-primary);
+  background-color: var(--bg-body);
 
-  /* REQUIREMENT: overflow hidden on body — no browser scrolling */
+  /* ===== CONTRAINTE DU PROF : pas de scroll global ===== */
   overflow: hidden;
 
-  /* REQUIREMENT: site takes entire screen space */
+  /* Le site prend tout l'espace de l'&eacute;cran */
   height: 100vh;
   width: 100vw;
 
-  /* FLEXBOX: Column layout stacks header above main content.
-     flex-direction: column — children flow top to bottom.
-     This lets the header take its natural height and
-     main-content fills the remaining space via flex: 1. */
+  /* FLEXBOX — display: flex
+     Active le mod&egrave;le flexbox sur body, ce qui permet d'organiser
+     ses enfants (header + main) dans un flux flexible.
+
+     flex-direction: column
+     Les enfants s'empilent verticalement (de haut en bas).
+     Le header occupe sa hauteur naturelle, et main remplit le reste
+     gr&acirc;ce &agrave; flex: 1. */
   display: flex;
   flex-direction: column;
 }
 
-/* Accessible focus styles — visible keyboard focus ring */
-:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
-}
 
-/* Remove default focus for mouse users */
-:focus:not(:focus-visible) {
-  outline: none;
-}
+/* ================================================================
+   3. HEADER (points 1-3)
+   ----------------------------------------------------------------
+   Barre sup&eacute;rieure contenant le titre, la recherche et la navigation.
+   ================================================================ */
+.header {
+  /* FLEXBOX — display: flex
+     Les enfants (titre, recherche, nav) sont dispos&eacute;s en ligne.
 
-/* ============================================================
-   3. HEADER
-   Fixed top bar with title, search, and navigation.
-   Uses flexbox to distribute items horizontally.
-   ============================================================ */
-.site-header {
-  /* FLEXBOX: Row layout aligns items horizontally.
-     align-items: center — vertically centers all children.
-     gap — adds consistent spacing between children without margins. */
+     align-items: center
+     Centre verticalement tous les enfants sur l'axe transversal
+     (axe perpendiculaire &agrave; la direction du flex). Ici, comme
+     flex-direction est row (par d&eacute;faut), l'axe transversal est vertical.
+     R&eacute;sultat : le titre, l'input et les liens sont align&eacute;s au milieu.
+
+     gap: 1rem
+     Espace uniforme entre chaque enfant, sans avoir besoin de margin. */
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
+  gap: 1rem;
 
-  background-color: var(--bg-secondary);
-  padding: var(--space-md) var(--space-xl);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-header);
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
 
-  /* flex-shrink: 0 — prevents header from shrinking
-     when main-content needs space. The header keeps
-     its natural height. */
+  /* flex-shrink: 0
+     Emp&ecirc;che le header de r&eacute;tr&eacute;cir quand le main a besoin de place.
+     Le header garde toujours sa hauteur naturelle. */
   flex-shrink: 0;
-  z-index: 100;
 }
 
-.site-title {
+.header__title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent-primary);
-  white-space: nowrap;       /* Prevent title from wrapping */
-  letter-spacing: -0.02em;
-}
-
-.search-bar {
-  /* flex: 1 — search bar expands to fill available space
-     between the title and the nav. This is a key flexbox
-     pattern: fixed items on sides, flexible item in middle. */
-  flex: 1;
-  max-width: 500px;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search-bar input::placeholder {
-  color: var(--text-muted);
-}
-
-.search-bar input:focus {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.2);
-}
-
-.main-nav {
-  /* FLEXBOX: Row layout for navigation links.
-     gap — consistent spacing between nav items.
-     flex-shrink: 0 — nav doesn't shrink, keeping links readable. */
-  display: flex;
-  gap: var(--space-sm);
-  flex-shrink: 0;
-}
-
-.nav-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s, background-color 0.2s;
+  color: var(--accent);
+  /* white-space: nowrap — emp&ecirc;che le titre de passer &agrave; la ligne */
   white-space: nowrap;
 }
 
-.nav-link:hover {
+.header__search {
+  /* flex: 1
+     Raccourci pour flex-grow: 1, flex-shrink: 1, flex-basis: 0%.
+     L'&eacute;l&eacute;ment s'&eacute;tire pour occuper tout l'espace disponible
+     entre le titre (&agrave; gauche) et la nav (&agrave; droite).
+     C'est le patron classique : &eacute;l&eacute;ments fixes aux extr&eacute;mit&eacute;s,
+     &eacute;l&eacute;ment flexible au centre. */
+  flex: 1;
+  max-width: 480px;
+}
+
+.header__search input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.header__search input::placeholder {
+  color: var(--text-muted);
+}
+
+.header__search input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.header__nav {
+  /* FLEXBOX — display: flex
+     Les liens de navigation sont dispos&eacute;s en ligne.
+
+     gap: 0.25rem
+     Petit espacement entre les liens.
+
+     flex-shrink: 0
+     La navigation ne r&eacute;tr&eacute;cit pas : les liens restent toujours lisibles. */
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.header__nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.header__nav a:hover {
   color: var(--text-primary);
   background-color: var(--bg-hover);
 }
 
-.nav-link--active {
-  color: var(--accent-primary);
-  background-color: var(--bg-tertiary);
+.header__nav a:first-child {
+  color: var(--accent);
+  background-color: var(--bg-card);
 }
 
-/* ============================================================
-   4. MAIN CONTENT LAYOUT
-   Horizontal split: sidebar (left) + body content (right).
-   ============================================================ */
-.main-content {
-  /* FLEXBOX: Row layout splits content into sidebar and body.
-     flex: 1 — this container fills all remaining vertical space
-     after the header (because body is display: flex, column).
-     min-height: 0 — critical for nested flex scroll containers;
-     without this, flex children won't respect overflow properly. */
+
+/* ================================================================
+   4. MAIN (point 4)
+   ----------------------------------------------------------------
+   Conteneur principal divis&eacute; en deux zones flex c&ocirc;te &agrave; c&ocirc;te :
+   la sidebar (&agrave; gauche) et le corps du site (&agrave; droite).
+   ================================================================ */
+.main {
+  /* FLEXBOX — display: flex
+     Par d&eacute;faut, flex-direction: row (les enfants sont c&ocirc;te &agrave; c&ocirc;te).
+     La sidebar occupe une largeur fixe, et body-right prend le reste.
+
+     flex: 1
+     Le main s'&eacute;tire pour remplir tout l'espace vertical restant
+     apr&egrave;s le header (car body est flex-direction: column).
+
+     min-height: 0
+     CRUCIAL pour les conteneurs flex imbriqu&eacute;s avec scroll.
+     Sans cela, les enfants flex ne respectent pas overflow
+     car leur taille minimale par d&eacute;faut est auto (= taille du contenu).
+     En mettant 0, on autorise l'enfant &agrave; &ecirc;tre plus petit que
+     son contenu, ce qui permet &agrave; overflow-y: auto de fonctionner. */
   display: flex;
   flex: 1;
   min-height: 0;
 }
 
-/* ============================================================
-   5. SIDEBAR (AREA A) — Collapsible Bot List
-   ============================================================
 
-   CHECKBOX HACK EXPLAINED:
-   -------------------------
-   The "checkbox hack" uses a hidden <input type="checkbox">
-   and a <label> to create interactive show/hide behavior
-   without JavaScript.
+/* ================================================================
+   5. SIDEBAR PLIABLE (point 5 — CHECKBOX HACK)
+   ================================================================
 
-   How it works:
-   1. A checkbox input is placed in the DOM (hidden via CSS).
-   2. A <label> with matching "for" attribute acts as the toggle button.
-   3. When the user clicks the label, the checkbox toggles checked/unchecked.
-   4. CSS sibling selectors (~) detect the checkbox state and apply styles:
-      - .sidebar-toggle:checked ~ .sidebar-content  →  hides sidebar content
-      - .sidebar-toggle:checked ~ .sidebar-toggle-label  →  changes toggle icon
+   *** EXPLICATION DETAILLEE DU CHECKBOX HACK ***
 
-   The checkbox is positioned absolutely and hidden with opacity: 0,
-   but NOT display: none, so it remains accessible to screen readers.
-   ============================================================ */
+   Le &laquo; checkbox hack &raquo; est une technique CSS pure qui permet
+   de cr&eacute;er un comportement interactif (afficher/cacher) sans JavaScript.
+
+   PRINCIPE :
+   1. On place un <input type="checkbox"> dans le HTML.
+      Il est cach&eacute; visuellement mais reste dans le flux du DOM.
+
+   2. Un <label for="sidebar-toggle"> est associ&eacute; au checkbox.
+      Quand l'utilisateur clique sur le label, le checkbox bascule
+      entre coch&eacute; (:checked) et non coch&eacute; automatiquement.
+
+   3. On utilise le s&eacute;lecteur CSS fr&egrave;re g&eacute;n&eacute;ral (~) pour cibler
+      les &eacute;l&eacute;ments qui suivent le checkbox dans le m&ecirc;me parent :
+        .sidebar__checkbox:checked ~ .sidebar__content { ... }
+      Quand le checkbox est :checked, on cache le contenu.
+      Quand il ne l'est pas, le contenu est visible.
+
+   POSITIONNEMENT (position: relative / absolute) :
+   - La sidebar a position: relative.
+     Cela &eacute;tablit un CONTEXTE DE POSITIONNEMENT : tout enfant avec
+     position: absolute sera positionn&eacute; par rapport &agrave; la sidebar
+     (et non par rapport &agrave; la fen&ecirc;tre du navigateur).
+
+   - Le checkbox a position: absolute.
+     Il est retir&eacute; du flux normal du document (il n'occupe plus
+     d'espace). On le place en haut &agrave; gauche (top: 0, left: 0)
+     de la sidebar, mais avec opacity: 0 pour le rendre invisible.
+     L'utilisateur ne le voit pas, mais il existe toujours dans le
+     DOM et r&eacute;agit au clic sur son label associ&eacute;.
+
+   POURQUOI position: absolute PLUTOT QUE display: none ?
+   Avec display: none, le checkbox serait compl&egrave;tement retir&eacute; :
+   certains lecteurs d'&eacute;cran ne le d&eacute;tecteraient pas.
+   Avec position: absolute + opacity: 0, il reste accessible.
+   ================================================================ */
 .sidebar {
-  /* FLEXBOX: Column layout for sidebar internals.
-     flex-shrink: 0 — sidebar doesn't shrink when body needs space.
-     width — fixed width, transitions smoothly on collapse. */
+  /* position: relative
+     CONTEXTE DE POSITIONNEMENT pour les enfants en position: absolute.
+     Le checkbox (position: absolute) sera positionn&eacute; par rapport
+     aux bords de cette sidebar, pas par rapport &agrave; la page enti&egrave;re.
+
+     Sans position: relative ici, le checkbox absolute remonterait
+     jusqu'au premier anc&ecirc;tre positionn&eacute; (ou &agrave; <html>). */
+  position: relative;
+
+  /* FLEXBOX — display: flex + flex-direction: column
+     Les enfants de la sidebar (label + contenu) s'empilent verticalement.
+     Le label est en haut, la liste des bots en dessous.
+
+     flex-shrink: 0
+     La sidebar ne r&eacute;tr&eacute;cit pas quand le body-right a besoin d'espace.
+     Elle garde sa largeur fixe de 250px. */
   display: flex;
   flex-direction: column;
-  width: var(--sidebar-width);
   flex-shrink: 0;
-  background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
-  transition: width 0.3s ease;
 
-  /* position: relative — needed for the absolutely-positioned
-     checkbox input within the sidebar. */
-  position: relative;
+  width: 250px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  transition: width 0.3s ease;
 }
 
-/* The actual checkbox — hidden visually but accessible */
-.sidebar-toggle {
-  /* position: absolute — takes it out of normal flow so
-     it doesn't affect layout. Positioned at top-left of sidebar. */
+/* Le checkbox cach&eacute; — ELEMENT CLE du checkbox hack */
+.sidebar__checkbox {
+  /* position: absolute
+     Retire le checkbox du flux normal du document.
+     Il ne prend plus d'espace dans la sidebar.
+     Il est positionn&eacute; par rapport &agrave; la sidebar (position: relative).
+
+     top: 0; left: 0
+     Plac&eacute; dans le coin sup&eacute;rieur gauche de la sidebar.
+
+     opacity: 0
+     Invisible mais toujours pr&eacute;sent dans le DOM.
+     Les lecteurs d'&eacute;cran peuvent encore le d&eacute;tecter.
+
+     pointer-events: none
+     Les clics passent &agrave; travers — c'est le label qui g&egrave;re les clics. */
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 0;             /* Invisible but still interactive for a11y */
   width: 0;
   height: 0;
-  pointer-events: none;   /* Label handles clicks instead */
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Toggle button (label) — always visible */
-.sidebar-toggle-label {
-  /* FLEXBOX: Row layout to align icon and text.
-     align-items: center — vertically center both. */
+/* Le label — bouton cliquable en haut de la sidebar */
+.sidebar__label {
+  /* FLEXBOX — display: flex + align-items: center
+     L'ic&ocirc;ne (&#9776;) et le texte sont align&eacute;s c&ocirc;te &agrave; c&ocirc;te,
+     centr&eacute;s verticalement.
+
+     gap: 0.5rem
+     Espace entre l'ic&ocirc;ne et le texte. */
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 0.5rem;
 
-  padding: var(--space-md);
+  padding: 0.875rem 1rem;
   cursor: pointer;
   color: var(--text-secondary);
   font-weight: 600;
   font-size: 0.9375rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
+  user-select: none;         /* Emp&ecirc;che la s&eacute;lection du texte au clic */
   transition: color 0.2s, background-color 0.2s;
-  user-select: none;       /* Prevent text selection when clicking */
+
+  /* flex-shrink: 0
+     Le label garde toujours sa hauteur. Il ne sera jamais
+     compress&eacute; par le contenu en dessous. */
+  flex-shrink: 0;
 }
 
-.sidebar-toggle-label:hover {
+.sidebar__label:hover {
   color: var(--text-primary);
   background-color: var(--bg-hover);
 }
 
-.toggle-icon {
+.sidebar__label-icon {
   font-size: 1.25rem;
   transition: transform 0.3s ease;
 }
 
-/* SIDEBAR CONTENT — the scrollable bot list area */
-.sidebar-content {
-  /* FLEXBOX: Column layout to stack heading + list.
-     flex: 1 — fills remaining sidebar height.
-     overflow-y: auto — REQUIREMENT: own independent vertical scrolling.
-     This creates a scroll container just for the bot list,
-     independent of the main content scroll. */
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: auto;
-  transition: opacity 0.3s ease, max-height 0.3s ease;
-}
+/* Le contenu pliable de la sidebar (liste des bots) */
+.sidebar__content {
+  /* FLEXBOX — display: flex + flex-direction: column
+     La liste des bots s'empile verticalement.
 
-/* Custom scrollbar — dark theme consistent */
-.sidebar-content::-webkit-scrollbar {
-  width: 6px;
-}
+     flex: 1
+     Le contenu remplit tout l'espace vertical restant
+     apr&egrave;s le label.
 
-.sidebar-content::-webkit-scrollbar-track {
-  background: transparent;
-}
+     overflow-y: auto
+     CONTRAINTE DU PROF : la liste des bots a son propre
+     scroll ind&eacute;pendant. Si la liste est plus longue que
+     l'espace disponible, une barre de d&eacute;filement appara&icirc;t
+     UNIQUEMENT dans cette zone, sans affecter le reste de la page.
 
-.sidebar-content::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 3px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
-/* -----------------------------------------------------------
-   CHECKBOX HACK: Collapsed state
-   When checkbox is :checked, the sibling (~) content hides
-   and the sidebar shrinks to just show the toggle button.
-   ----------------------------------------------------------- */
-
-/* When checked: hide sidebar content */
-.sidebar-toggle:checked ~ .sidebar-content {
-  opacity: 0;               /* Fade out content */
-  max-height: 0;            /* Collapse height to zero */
-  overflow: hidden;          /* Hide any overflow during collapse */
-  padding: 0;
-  pointer-events: none;     /* Prevent interaction with hidden content */
-}
-
-/* When checked: rotate the toggle icon to indicate collapsed state */
-.sidebar-toggle:checked ~ .sidebar-toggle-label .toggle-icon {
-  transform: rotate(90deg);  /* Visual cue: icon rotates */
-}
-
-/* When checked: shrink the sidebar width */
-.sidebar-toggle:checked ~ .sidebar-toggle-label {
-  border-bottom: none;
-}
-
-/* Apply width change to the sidebar itself when checkbox is checked.
-   We use :has() — supported in modern browsers — to detect the
-   checked state from the parent element. */
-.sidebar:has(.sidebar-toggle:checked) {
-  width: 56px;               /* Collapsed width — just enough for toggle */
-}
-
-/* Hide the toggle text when collapsed */
-.sidebar-toggle:checked ~ .sidebar-toggle-label .toggle-text {
-  display: none;
-}
-
-.sidebar-heading {
-  padding: var(--space-md) var(--space-md) var(--space-sm);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
-
-/* ============================================================
-   6. BOT LIST
-   Each bot shows an avatar, name, and online status.
-   ============================================================ */
-.bot-list {
-  list-style: none;          /* Remove default bullet points */
-}
-
-.bot-item {
-  /* FLEXBOX: Row layout aligns avatar and text info side by side.
-     align-items: center — vertically centers avatar with text. */
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-  transition: background-color 0.15s;
-  border-left: 3px solid transparent;  /* Reserve space for active indicator */
-}
-
-.bot-item:hover {
-  background-color: var(--bg-hover);
-}
-
-.bot-item--active {
-  background-color: var(--bg-active);
-  border-left-color: var(--accent-primary);  /* Purple left border = active */
-}
-
-.bot-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);  /* Circular avatar */
-  flex-shrink: 0;                      /* Don't shrink avatar */
-  object-fit: cover;                   /* Prevent image distortion */
-}
-
-.bot-info {
-  /* FLEXBOX: Column layout stacks name above status.
-     min-width: 0 — allows text to truncate with ellipsis
-     instead of overflowing the flex container. */
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.bot-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;   /* Truncate long names with "..." */
-}
-
-.bot-status {
-  font-size: 0.6875rem;
-  font-weight: 500;
-}
-
-/* Status color coding — distinguishable for colorblind users:
-   green (online), amber (busy), and red (offline) are
-   chosen to differ in both hue AND brightness. */
-.bot-status--online {
-  color: var(--accent-success);
-}
-
-.bot-status--busy {
-  color: var(--accent-warning);
-}
-
-.bot-status--offline {
-  color: var(--text-muted);
-}
-
-/* ============================================================
-   7. BODY CONTENT (AREA B)
-   Right side: profile zone, discussion grid, new message form.
-   ============================================================ */
-.body-content {
-  /* FLEXBOX: Column layout stacks the 3 zones vertically.
-     flex: 1 — fills all horizontal space after the sidebar.
-     min-width: 0 — prevents flex children from overflowing
-     when content is wider than available space.
-     overflow: hidden — zones handle their own scrolling. */
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-/* ============================================================
-   8. PROFILE ZONE
-   Top section showing the selected bot's profile.
-   ============================================================ */
-.profile-zone {
-  /* FLEXBOX: Row layout places avatar, details, and button in a row.
-     align-items: center — vertically centers all children.
-     flex-shrink: 0 — profile zone keeps its height, doesn't shrink. */
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-
-  padding: var(--space-lg) var(--space-xl);
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.profile-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-  object-fit: cover;
-  border: 3px solid var(--accent-primary);
-}
-
-.profile-details {
-  /* flex: 1 — details expand to fill space between avatar and button.
-     min-width: 0 — allows text truncation in flex children. */
-  flex: 1;
-  min-width: 0;
-}
-
-.profile-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.profile-role {
-  font-size: 0.8125rem;
-  color: var(--accent-info);
-  margin-bottom: var(--space-xs);
-}
-
-.profile-description {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.profile-stats {
-  /* FLEXBOX: Row layout for stat badges.
-     flex-wrap: wrap — stats wrap to next line on small screens. */
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  margin-top: var(--space-sm);
-}
-
-.stat {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.stat strong {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.btn-follow {
-  padding: var(--space-sm) var(--space-lg);
-  background-color: var(--accent-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-.btn-follow:hover {
-  background-color: #6b5cd8;
-}
-
-.btn-follow:active {
-  transform: scale(0.97);
-}
-
-/* ============================================================
-   9. DISCUSSION ZONE
-   Scrollable area containing a grid of discussion cards.
-   ============================================================ */
-.discussion-zone {
-  /* FLEXBOX: Column layout stacks title above the grid.
-     flex: 1 — fills remaining vertical space between
-     profile zone and new message zone.
-     overflow-y: auto — REQUIREMENT: own independent vertical scrolling.
-     min-height: 0 — essential for flex overflow to work. */
+     min-height: 0
+     N&eacute;cessaire pour que overflow-y fonctionne dans un contexte flex.
+     Par d&eacute;faut, un enfant flex a min-height: auto (= taille du contenu).
+     En mettant 0, on permet au contenu de d&eacute;border et donc de scroller. */
   display: flex;
   flex-direction: column;
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: var(--space-lg) var(--space-xl);
+  transition: opacity 0.3s ease;
 }
 
-/* Custom scrollbar for discussion zone */
-.discussion-zone::-webkit-scrollbar {
-  width: 8px;
+/* Scrollbar personnalis&eacute;e pour la sidebar (coh&eacute;rence du th&egrave;me sombre) */
+.sidebar__content::-webkit-scrollbar {
+  width: 5px;
 }
-
-.discussion-zone::-webkit-scrollbar-track {
+.sidebar__content::-webkit-scrollbar-track {
   background: transparent;
 }
-
-.discussion-zone::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
+.sidebar__content::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
 
-.discussion-zone::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
+/* ---------------------------------------------------------------
+   CHECKBOX HACK : &Eacute;TAT PLIE (checkbox :checked)
+   Quand l'utilisateur clique le label, le checkbox passe en :checked.
+   Le s&eacute;lecteur ~ (fr&egrave;re g&eacute;n&eacute;ral) permet de cibler tout &eacute;l&eacute;ment
+   qui suit le checkbox DANS LE MEME PARENT.
 
-.zone-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
-  flex-shrink: 0;
-}
+   .sidebar__checkbox:checked ~ .sidebar__content
+     → s&eacute;lectionne .sidebar__content quand le checkbox est coch&eacute;.
 
-.discussion-grid {
-  /* CSS GRID: 3 columns of equal width for discussion cards.
-     Grid is preferred over flexbox here because we want a true
-     2D grid layout where cards align in both rows and columns.
-     auto-fill + minmax makes it responsive: cards reflow to
-     fewer columns as screen width decreases. */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-md);
-}
+   On cache le contenu en mettant max-height: 0 et opacity: 0.
+   --------------------------------------------------------------- */
 
-/* ============================================================
-   10. DISCUSSION CARDS
-   Each card shows a conversation with scrollable chat bubbles.
-   ============================================================ */
-.discussion-card {
-  /* FLEXBOX: Column layout stacks header above messages.
-     This ensures the header stays at the top and messages
-     fill remaining card height. */
-  display: flex;
-  flex-direction: column;
-
-  background-color: var(--bg-tertiary);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+/* Quand coch&eacute; : cacher le contenu de la sidebar */
+.sidebar__checkbox:checked ~ .sidebar__content {
+  opacity: 0;
+  max-height: 0;
   overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 0;
+  pointer-events: none;      /* Emp&ecirc;che l'interaction avec le contenu cach&eacute; */
 }
 
-.discussion-card:hover {
-  border-color: var(--accent-primary);
-  box-shadow: var(--shadow-md);
+/* Quand coch&eacute; : tourner l'ic&ocirc;ne pour indiquer l'&eacute;tat pli&eacute; */
+.sidebar__checkbox:checked ~ .sidebar__label .sidebar__label-icon {
+  transform: rotate(90deg);
 }
 
-.card-header {
-  /* FLEXBOX: Row layout for avatar + title.
-     align-items: center — vertically centers both. */
+/* Quand coch&eacute; : cacher le texte du label (garder juste l'ic&ocirc;ne) */
+.sidebar__checkbox:checked ~ .sidebar__label .sidebar__label-text {
+  display: none;
+}
+
+/* Quand coch&eacute; : r&eacute;duire la largeur de la sidebar.
+   On utilise le s&eacute;lecteur :has() pour d&eacute;tecter l'&eacute;tat du checkbox
+   depuis le parent (.sidebar). */
+.sidebar:has(.sidebar__checkbox:checked) {
+  width: 52px;
+}
+
+
+/* ================================================================
+   6. LISTE DES BOTS
+   ----------------------------------------------------------------
+   Chaque bot affiche une image et un nom.
+   ================================================================ */
+.bot-list {
+  list-style: none;          /* Supprime les puces par d&eacute;faut */
+}
+
+.bot-list__item {
+  /* FLEXBOX — display: flex + align-items: center
+     L'avatar et le nom sont c&ocirc;te &agrave; c&ocirc;te, centr&eacute;s verticalement.
+
+     gap: 0.625rem
+     Espace entre l'avatar et le nom. */
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 0.625rem;
 
-  padding: var(--space-sm) var(--space-md);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-left: 3px solid transparent;  /* R&eacute;serve la place pour l'indicateur actif */
+  transition: background-color 0.15s;
+}
+
+.bot-list__item:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Bot actuellement s&eacute;lectionn&eacute; : fond plus clair + bordure violette */
+.bot-list__item--active {
   background-color: var(--bg-active);
-  border-bottom: 1px solid var(--border-color);
+  border-left-color: var(--accent);
+}
+
+.bot-list__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-round);  /* Cercle parfait */
+
+  /* flex-shrink: 0
+     L'avatar ne r&eacute;tr&eacute;cit jamais, m&ecirc;me si le nom est long.
+     Il garde toujours ses 36x36px. */
+  flex-shrink: 0;
+
+  /* object-fit: cover
+     Si l'image n'est pas carr&eacute;e, elle est recadr&eacute;e au centre
+     sans d&eacute;formation. CONTRAINTE DU PROF : pas de compression d'image. */
+  object-fit: cover;
+}
+
+.bot-list__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+
+  /* white-space: nowrap + overflow: hidden + text-overflow: ellipsis
+     Si le nom du bot est trop long, il est tronqu&eacute; avec &laquo; ... &raquo;
+     au lieu de d&eacute;border du conteneur. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* min-width: 0
+     N&eacute;cessaire dans un contexte flex pour que text-overflow fonctionne.
+     Par d&eacute;faut, un enfant flex a min-width: auto, ce qui l'emp&ecirc;che
+     de r&eacute;tr&eacute;cir en dessous de la taille de son contenu. */
+  min-width: 0;
+}
+
+
+/* ================================================================
+   7. CORPS DROIT — AREA RIGHT (point 6)
+   ----------------------------------------------------------------
+   Contient les trois sous-zones empil&eacute;es verticalement :
+   profil, discussions, nouveau message.
+   ================================================================ */
+.body-right {
+  /* FLEXBOX — display: flex + flex-direction: column
+     Les trois sous-zones (profil, discussions, nouveau message)
+     s'empilent de haut en bas.
+
+     flex: 1
+     Le corps droit occupe tout l'espace horizontal restant
+     apr&egrave;s la sidebar.
+
+     min-width: 0
+     Emp&ecirc;che le contenu (cartes, textes) de forcer le conteneur
+     &agrave; d&eacute;passer la largeur disponible.
+
+     min-height: 0
+     Permet aux enfants flex avec overflow de fonctionner correctement.
+
+     overflow: hidden
+     Chaque sous-zone g&egrave;re son propre scroll. */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+
+/* ================================================================
+   8. ZONE PROFIL (point 7 / 6a)
+   ----------------------------------------------------------------
+   Affiche l'image de profil, les infos (nom, r&ocirc;le, bouton Suivre)
+   et une description textuelle.
+   ================================================================ */
+.profile {
+  /* FLEXBOX — display: flex + align-items: center + flex-wrap: wrap
+     L'avatar et la zone info sont c&ocirc;te &agrave; c&ocirc;te.
+
+     flex-wrap: wrap
+     Permet aux &eacute;l&eacute;ments de passer &agrave; la ligne si l'espace est insuffisant.
+     Sur &eacute;cran &eacute;troit, l'avatar et les infos s'empilent.
+
+     gap: 1rem
+     Espacement entre l'avatar, les infos et la description.
+
+     flex-shrink: 0
+     La zone profil ne r&eacute;tr&eacute;cit pas — elle garde sa hauteur naturelle. */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  padding: 1.25rem 1.5rem;
+  background-color: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
-.card-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
+.profile__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-round);
+  border: 3px solid var(--accent);
+
+  /* flex-shrink: 0
+     L'avatar garde sa taille fixe en toute circonstance. */
   flex-shrink: 0;
   object-fit: cover;
 }
 
-.card-title {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.profile__info {
+  /* FLEXBOX — display: flex + flex-direction: column
+     Le nom, le r&ocirc;le et le bouton s'empilent verticalement.
 
-/* -----------------------------------------------------------
-   CARD MESSAGES — scrollable chat area inside each card
-   REQUIREMENT: Each card has its own independent scroll
-   if messages are too long.
-   ----------------------------------------------------------- */
-.card-messages {
-  /* FLEXBOX: Column layout stacks messages top to bottom.
-     flex: 1 — fills remaining card space.
-     overflow-y: auto — independent scroll per card.
-     max-height — limits card height so overflow triggers scroll. */
+     flex: 1
+     Prend tout l'espace restant &agrave; c&ocirc;t&eacute; de l'avatar.
+
+     min-width: 200px
+     Largeur minimale : si l'espace est inf&eacute;rieur, flex-wrap
+     fera passer cet &eacute;l&eacute;ment &agrave; la ligne suivante. */
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 200px;
+}
 
-  padding: var(--space-md);
+.profile__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.profile__role {
+  font-size: 0.8125rem;
+  color: #4da6ff;            /* Bleu — contraste &eacute;lev&eacute; sur fond sombre */
+}
+
+.profile__follow {
+  align-self: flex-start;    /* Le bouton ne prend pas toute la largeur */
+  margin-top: 0.25rem;
+  padding: 0.375rem 1.25rem;
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.profile__follow:hover {
+  background-color: var(--accent-hover);
+}
+
+.profile__description {
+  /* flex-basis: 100%
+     Force la description &agrave; occuper toute la largeur,
+     la pla&ccedil;ant sur sa propre ligne dans le conteneur flex-wrap. */
+  flex-basis: 100%;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+
+/* ================================================================
+   9. ZONE DISCUSSIONS (point 8 / 6b)
+   ----------------------------------------------------------------
+   Contient une grille de 9+ cartes de discussion.
+   A son propre scroll vertical ind&eacute;pendant.
+   ================================================================ */
+.discussions {
+  /* FLEXBOX — display: flex + flex-direction: column
+     Utilis&eacute; ici principalement pour que flex: 1 fonctionne.
+
+     flex: 1
+     La zone discussions s'&eacute;tire pour occuper tout l'espace
+     entre la zone profil (au-dessus) et la zone message (en dessous).
+
+     overflow-y: auto
+     CONTRAINTE DU PROF : scroll ind&eacute;pendant pour cette zone.
+     Si les cartes d&eacute;passent la hauteur disponible, on scrolle
+     uniquement ici, pas toute la page.
+
+     min-height: 0
+     Indispensable pour que overflow-y fonctionne dans un conteneur flex.
+     Explication : dans un contexte flex-direction: column, les enfants
+     ont par d&eacute;faut min-height: auto, ce qui les force &agrave; afficher
+     tout leur contenu (pas de scroll possible). min-height: 0 supprime
+     cette contrainte et permet au contenu de d&eacute;border avec scroll. */
+  display: flex;
+  flex-direction: column;
   flex: 1;
   overflow-y: auto;
-  max-height: 200px;        /* Triggers scroll for long conversations */
+  min-height: 0;
+  padding: 1rem 1.5rem;
 }
 
-/* Thin scrollbar inside cards */
-.card-messages::-webkit-scrollbar {
-  width: 4px;
+/* Scrollbar personnalis&eacute;e pour la zone discussions */
+.discussions::-webkit-scrollbar {
+  width: 7px;
+}
+.discussions::-webkit-scrollbar-track {
+  background: transparent;
+}
+.discussions::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
 }
 
-.card-messages::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 2px;
-}
+.discussions__grid {
+  /* FLEXBOX — display: flex + flex-wrap: wrap
+     Les cartes s'organisent en grille flexible.
 
-/* ============================================================
-   11. CHAT BUBBLES
-   Messages styled as bubbles — user on right, bot on left.
-   ============================================================ */
-.msg {
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  max-width: 85%;            /* Bubbles don't span full width */
-  word-wrap: break-word;     /* Prevent long words from overflowing */
-  overflow-wrap: break-word;
-}
+     flex-wrap: wrap
+     Quand les cartes ne tiennent plus sur une ligne, elles passent
+     &agrave; la ligne suivante automatiquement. C'est ce qui permet
+     la RESPONSIVITE : sur grand &eacute;cran on a 3 cartes par ligne,
+     sur &eacute;cran moyen 2, et sur petit &eacute;cran 1 (empilement vertical).
 
-/* User messages — right-aligned, purple bubble */
-.msg--user {
-  background-color: var(--bubble-user);
-  color: #fff;
-  /* align-self: flex-end — in a flex column, this pushes the
-     element to the right side (cross-axis end). This is how
-     we align user messages to the right without a wrapper. */
-  align-self: flex-end;
-  border-bottom-right-radius: var(--space-xs);  /* Chat bubble tail effect */
-}
-
-/* Bot messages — left-aligned, dark bubble */
-.msg--bot {
-  background-color: var(--bubble-bot);
-  color: var(--text-primary);
-  /* align-self: flex-start — pushes to the left side.
-     Combined with flex-end on user messages, this creates
-     the classic left/right chat layout. */
-  align-self: flex-start;
-  border-bottom-left-radius: var(--space-xs);   /* Chat bubble tail effect */
-}
-
-/* ============================================================
-   12. NEW MESSAGE ZONE
-   Bottom bar with title, textarea, and publish button.
-   ============================================================ */
-.new-message-zone {
-  padding: var(--space-md) var(--space-xl);
-  background-color: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
-  flex-shrink: 0;            /* Don't shrink — always visible at bottom */
-}
-
-.new-message-zone .zone-title {
-  margin-bottom: var(--space-sm);
-  font-size: 0.8125rem;
-}
-
-.message-form {
-  /* FLEXBOX: Row layout places textarea and button side by side.
-     align-items: flex-end — aligns button to bottom of textarea.
-     gap — spacing between textarea and button. */
+     gap: 1rem
+     Espace uniforme entre les cartes (horizontal et vertical). */
   display: flex;
-  align-items: flex-end;
-  gap: var(--space-md);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.message-form textarea {
-  /* flex: 1 — textarea expands to fill available width,
-     leaving just enough room for the button. */
-  flex: 1;
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  line-height: 1.5;
-  resize: vertical;          /* Allow vertical resize only */
+
+/* ================================================================
+   10. CARTES DE DISCUSSION
+   ----------------------------------------------------------------
+   Chaque carte contient un titre et une zone de messages scrollable.
+   ================================================================ */
+.card {
+  /* FLEXBOX — display: flex + flex-direction: column
+     Le titre reste en haut, les messages remplissent le reste.
+
+     flex: 1 1 300px
+     - flex-grow: 1 — la carte s'&eacute;tire pour remplir l'espace
+     - flex-shrink: 1 — elle peut r&eacute;tr&eacute;cir si n&eacute;cessaire
+     - flex-basis: 300px — largeur de base id&eacute;ale.
+     Combin&eacute; avec flex-wrap sur le parent, cela cr&eacute;e une grille
+     responsive : 3 cartes par ligne si la place le permet,
+     sinon elles s'empilent. */
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 300px;
+  max-width: 100%;
+
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
   transition: border-color 0.2s;
 }
 
-.message-form textarea::placeholder {
+.card:hover {
+  border-color: var(--accent);
+}
+
+.card__title {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: var(--bg-active);
+  border-bottom: 1px solid var(--border);
+
+  /* flex-shrink: 0
+     Le titre ne r&eacute;tr&eacute;cit jamais — il reste toujours visible
+     m&ecirc;me si les messages sont tr&egrave;s nombreux. */
+  flex-shrink: 0;
+}
+
+/* Zone de messages DANS chaque carte */
+.card__messages {
+  /* FLEXBOX — display: flex + flex-direction: column
+     Les bulles de chat s'empilent verticalement.
+
+     flex: 1
+     Remplit tout l'espace restant dans la carte apr&egrave;s le titre.
+
+     overflow-y: auto
+     CONTRAINTE DU PROF : chaque carte a son propre scroll
+     ind&eacute;pendant pour les messages. Si la conversation est trop longue,
+     on scrolle &agrave; l'int&eacute;rieur de la carte uniquement.
+
+     max-height: 220px
+     Limite la hauteur de la zone de messages pour d&eacute;clencher le scroll.
+     Sans cela, la carte s'agrandirait ind&eacute;finiment. */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+
+  padding: 0.75rem;
+  overflow-y: auto;
+  max-height: 220px;
+}
+
+/* Scrollbar fine dans les cartes */
+.card__messages::-webkit-scrollbar {
+  width: 4px;
+}
+.card__messages::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+
+/* ================================================================
+   11. BULLES DE CHAT
+   ----------------------------------------------------------------
+   Messages stylis&eacute;s comme des bulles :
+   - Utilisateur : align&eacute;es &agrave; droite, couleur violette
+   - Bot : align&eacute;es &agrave; gauche, couleur grise
+   ================================================================ */
+.bubble {
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  max-width: 85%;            /* Les bulles ne prennent pas toute la largeur */
+
+  /* word-wrap + overflow-wrap : break-word
+     Les mots tr&egrave;s longs sont coup&eacute;s pour ne pas d&eacute;border de la bulle.
+     CONTRAINTE DU PROF : pas de d&eacute;bordement de texte. */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Bulle utilisateur — &agrave; droite, violette */
+.bubble--user {
+  background-color: var(--bubble-user);
+  color: #fff;
+
+  /* align-self: flex-end
+     Dans un conteneur flex-direction: column, l'axe transversal
+     est horizontal. align-self: flex-end pousse cet &eacute;l&eacute;ment
+     vers la DROITE (la fin de l'axe transversal).
+     C'est ainsi qu'on aligne les messages utilisateur &agrave; droite
+     sans conteneur suppl&eacute;mentaire. */
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;   /* Effet &laquo; queue &raquo; de bulle */
+}
+
+/* Bulle bot — &agrave; gauche, grise */
+.bubble--bot {
+  background-color: var(--bubble-bot);
+  color: var(--text-primary);
+
+  /* align-self: flex-start
+     Pousse cet &eacute;l&eacute;ment vers la GAUCHE (le d&eacute;but de l'axe transversal).
+     Combin&eacute; avec flex-end sur les messages utilisateur, cela cr&eacute;e
+     la disposition classique gauche/droite des applications de messagerie. */
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+
+/* ================================================================
+   12. ZONE NOUVEAU MESSAGE (point 9 / 6c)
+   ================================================================ */
+.new-message {
+  padding: 0.875rem 1.5rem;
+  background-color: var(--bg-sidebar);
+  border-top: 1px solid var(--border);
+
+  /* flex-shrink: 0
+     Cette zone reste toujours en bas et ne r&eacute;tr&eacute;cit jamais.
+     La zone discussions au-dessus absorbe tout le changement de taille. */
+  flex-shrink: 0;
+}
+
+.new-message__title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.new-message__form {
+  /* FLEXBOX — display: flex + align-items: flex-end
+     Le textarea et le bouton sont c&ocirc;te &agrave; c&ocirc;te.
+
+     align-items: flex-end
+     Aligne les &eacute;l&eacute;ments vers le BAS de l'axe transversal.
+     Le bouton est ainsi align&eacute; avec le bas du textarea
+     (utile quand le textarea fait plusieurs lignes).
+
+     gap: 0.75rem
+     Espace entre le textarea et le bouton. */
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.new-message__textarea {
+  /* flex: 1
+     Le textarea s'&eacute;tire pour prendre toute la place disponible,
+     ne laissant que la largeur du bouton &agrave; c&ocirc;t&eacute;. */
+  flex: 1;
+
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;          /* Redimensionnement vertical uniquement */
+}
+
+.new-message__textarea::placeholder {
   color: var(--text-muted);
 }
 
-.message-form textarea:focus {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.2);
+.new-message__textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
-.btn-publish {
-  padding: var(--space-sm) var(--space-xl);
-  background-color: var(--accent-success);
+.new-message__button {
+  padding: 0.5rem 1.5rem;
+  background-color: var(--accent-green);
   color: #fff;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+
+  /* flex-shrink: 0
+     Le bouton ne r&eacute;tr&eacute;cit jamais : il garde toujours sa taille
+     pour que le texte &laquo; Publier &raquo; reste lisible. */
   flex-shrink: 0;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color 0.2s;
 }
 
-.btn-publish:hover {
-  background-color: #27b573;
+.new-message__button:hover {
+  background-color: var(--accent-green-hover);
 }
 
-.btn-publish:active {
-  transform: scale(0.97);
-}
 
-/* ============================================================
+/* ================================================================
    13. RESPONSIVE DESIGN
-   Adapts layout for tablets and mobile devices.
-   ============================================================ */
+   ----------------------------------------------------------------
+   CONTRAINTE DU PROF : si la fen&ecirc;tre r&eacute;tr&eacute;cit, les discussions
+   s'empilent verticalement, pas de d&eacute;bordement de texte, pas de
+   chevauchement, pas de compression d'image.
+   ================================================================ */
 
-/* --- Tablet: <= 1024px --- */
-@media (max-width: 1024px) {
-  .site-header {
-    padding: var(--space-sm) var(--space-md);
-    gap: var(--space-md);
-  }
-
-  /* Reduce sidebar width on tablets */
-  :root {
-    --sidebar-width: 220px;
-  }
-
-  .profile-zone {
-    padding: var(--space-md);
-    gap: var(--space-md);
-  }
-
-  .profile-avatar {
-    width: 56px;
-    height: 56px;
-  }
-
-  .discussion-zone {
-    padding: var(--space-md);
-  }
-
-  .new-message-zone {
-    padding: var(--space-md);
-  }
-}
-
-/* --- Small tablet / large mobile: <= 768px --- */
+/* --- Tablette : &lt;= 768px --- */
 @media (max-width: 768px) {
-  .site-header {
-    /* FLEXBOX: Switch to wrapping so items flow to next line.
-       flex-wrap: wrap — when items don't fit in one row,
-       they wrap to a new line instead of overflowing. */
+
+  .header {
+    /* FLEXBOX — flex-wrap: wrap
+       Quand l'espace horizontal est insuffisant, les &eacute;l&eacute;ments
+       du header passent &agrave; la ligne suivante au lieu de d&eacute;border.
+       Le champ de recherche passe sous le titre et la nav. */
     flex-wrap: wrap;
-    gap: var(--space-sm);
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
   }
 
-  .site-title {
+  .header__title {
     font-size: 1.25rem;
   }
 
-  .search-bar {
-    /* order: 3 — reorders search bar to appear after nav on wrap.
-       flex-basis: 100% — forces it to its own line when wrapped. */
+  .header__search {
+    /* order: 3
+       R&eacute;ordonne le champ de recherche en troisi&egrave;me position
+       (apr&egrave;s titre et nav), ce qui le place sur une nouvelle ligne.
+
+       flex-basis: 100%
+       Force le champ &agrave; prendre toute la largeur, le pla&ccedil;ant
+       seul sur sa ligne. */
     order: 3;
     flex-basis: 100%;
     max-width: none;
   }
 
-  /* Collapse sidebar by default on small screens */
+  /* R&eacute;duire la sidebar sur tablette */
   .sidebar {
-    width: 56px;
+    width: 52px;
   }
 
-  .sidebar .sidebar-content {
+  /* Cacher le contenu de la sidebar par d&eacute;faut sur petit &eacute;cran */
+  .sidebar__content {
     opacity: 0;
     max-height: 0;
     overflow: hidden;
     pointer-events: none;
   }
 
-  .sidebar .sidebar-toggle-label .toggle-text {
+  .sidebar__label .sidebar__label-text {
     display: none;
   }
 
-  /* Unchecked = expand on mobile (inverted behavior) */
-  .sidebar:has(.sidebar-toggle:checked) {
-    width: var(--sidebar-width);
+  /* Inverser le comportement : cocher = OUVRIR (au lieu de fermer) */
+  .sidebar:has(.sidebar__checkbox:checked) {
+    width: 250px;
   }
 
-  .sidebar-toggle:checked ~ .sidebar-content {
+  .sidebar__checkbox:checked ~ .sidebar__content {
     opacity: 1;
     max-height: 100vh;
     overflow-y: auto;
     pointer-events: auto;
   }
 
-  .sidebar-toggle:checked ~ .sidebar-toggle-label .toggle-text {
+  .sidebar__checkbox:checked ~ .sidebar__label .sidebar__label-text {
     display: inline;
   }
 
-  /* Profile stacks vertically on small screens */
-  .profile-zone {
-    /* FLEXBOX: flex-wrap: wrap — allows avatar and details
-       to stack vertically if there's not enough horizontal space. */
-    flex-wrap: wrap;
+  /* Profil : empiler verticalement */
+  .profile {
+    /* justify-content: center
+       Centre les &eacute;l&eacute;ments horizontalement quand ils wrappent. */
     justify-content: center;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .profile__info {
+    /* align-items: center
+       Centre le nom, le r&ocirc;le et le bouton horizontalement. */
+    align-items: center;
+  }
+
+  .profile__follow {
+    align-self: center;
+  }
+
+  .profile__description {
     text-align: center;
   }
 
-  .profile-details {
-    flex-basis: 100%;          /* Full width — forces to new line */
+  /* CONTRAINTE DU PROF : les cartes s'empilent verticalement.
+     flex-basis: 100% force chaque carte &agrave; prendre toute la largeur,
+     donc une seule carte par ligne = empilement vertical. */
+  .card {
+    flex-basis: 100%;
   }
 
-  .profile-stats {
-    justify-content: center;
-  }
+  /* Le formulaire de message s'empile aussi */
+  .new-message__form {
+    /* FLEXBOX — flex-direction: column
+       Le textarea passe au-dessus du bouton.
 
-  /* REQUIREMENT: discussion cards stack vertically on narrow screens.
-     Switch from multi-column grid to single column. */
-  .discussion-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Message form stacks vertically on mobile */
-  .message-form {
-    /* FLEXBOX: flex-direction: column — stacks textarea above button.
-       align-items: stretch — both children fill full width. */
+       align-items: stretch
+       Les deux enfants (textarea + bouton) prennent toute la largeur
+       disponible. */
     flex-direction: column;
     align-items: stretch;
   }
 }
 
-/* --- Mobile: <= 480px --- */
+/* --- Mobile : &lt;= 480px --- */
 @media (max-width: 480px) {
-  .site-header {
-    padding: var(--space-sm);
+
+  .header {
+    padding: 0.375rem 0.5rem;
   }
 
-  .site-title {
-    font-size: 1.125rem;
-  }
-
-  .nav-link {
-    font-size: 0.75rem;
-    padding: var(--space-xs) var(--space-sm);
-  }
-
-  .profile-avatar {
-    width: 48px;
-    height: 48px;
-  }
-
-  .profile-name {
+  .header__title {
     font-size: 1.1rem;
   }
 
-  .profile-description {
+  .header__nav a {
     font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
   }
 
-  .discussion-zone {
-    padding: var(--space-sm);
+  .profile {
+    padding: 0.75rem;
   }
 
-  .new-message-zone {
-    padding: var(--space-sm);
+  .profile__avatar {
+    width: 56px;
+    height: 56px;
   }
 
-  .msg {
+  .profile__name {
+    font-size: 1.1rem;
+  }
+
+  .discussions {
+    padding: 0.5rem;
+  }
+
+  .new-message {
+    padding: 0.5rem;
+  }
+
+  .bubble {
     font-size: 0.75rem;
     max-width: 90%;
   }
 }
 
-/* ============================================================
-   14. ACCESSIBILITY ENHANCEMENTS
-   High contrast and motion preferences.
-   ============================================================ */
 
-/* Respect user's preference for reduced motion */
+/* ================================================================
+   14. ACCESSIBILITE
+   ----------------------------------------------------------------
+   Prise en charge des pr&eacute;f&eacute;rences utilisateur pour le mouvement
+   et le contraste, et styles de focus clavier visibles.
+   ================================================================ */
+
+/* Focus clavier visible — anneau color&eacute; pour la navigation au clavier */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Pas d'anneau de focus pour les clics souris */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Respecter la pr&eacute;f&eacute;rence &laquo; r&eacute;duire les animations &raquo; de l'utilisateur */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -982,20 +1112,20 @@ body {
   }
 }
 
-/* High contrast mode — increase all contrasts further */
+/* Mode contraste &eacute;lev&eacute; — pour les utilisateurs qui l'activent dans leur OS */
 @media (prefers-contrast: high) {
   :root {
-    --bg-primary: #000000;
-    --bg-secondary: #0a0a0a;
-    --bg-tertiary: #141414;
+    --bg-body: #000000;
+    --bg-header: #0a0a0a;
+    --bg-sidebar: #0a0a0a;
+    --bg-card: #111111;
     --text-primary: #ffffff;
     --text-secondary: #cccccc;
-    --border-color: #444444;
-    --bubble-user: #5b4fd4;
-    --bubble-bot: #333333;
+    --border: #555555;
   }
 }
 
-/* ============================================================
-   END OF STYLESHEET
-   ============================================================ */
+
+/* ================================================================
+   FIN DU FICHIER CSS
+   ================================================================ */
